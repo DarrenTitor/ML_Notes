@@ -4,7 +4,7 @@
 
 
 
-[第一章](./PRML/chap1)
+[第一章](./PRML/chap1/chap1)
 
 
 
