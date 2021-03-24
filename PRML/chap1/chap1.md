@@ -1,15 +1,3 @@
-<head>
-    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-    <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({
-            tex2jax: {
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-            inlineMath: [['$','$']]
-            }
-        });
-    </script>
-</head>
-
 ## 1.1. Curve Fitting
 1. As we shall see in Chapter 3, the number of parameters is not necessarily the most appropriate measure of model complexity. 参数个数不足以衡量模型的复杂度
 2. We shall see that the least squares approach to finding the model parameters represents a specific case of maximum likelihood (discussed in Section 1.2.5), and that the over-fitting problem can be understood as Section 3.4 a general property of maximum likelihood 最小二乘法可以看作MLE，过拟合是MLE的property
@@ -57,7 +45,7 @@ The probability that x will lie in an interval (a, b) is then given by
 需要注意的是，当 $x=g(y)$ 为线性变化时，$g^{\prime\prime}(y)=0$ ，因此上面式子里的第二项就没有了，此时关系保持。
 
 ![](Pasted%20image%2020210324222232.png)
-上图中，从$x$变换到$y$经历了一个非线性变换。如果不考虑jacobian factor，应该是红线转移到绿线，最值保持函数关系。但是因为有jacobian factor，实际上转移到了紫色的线，最值并不符合函数关系
+上图中，从$x$ 变换到 $y$经历了一个非线性变换。如果不考虑jacobian factor，应该是红线转移到绿线，最值保持函数关系。但是因为有jacobian factor，实际上转移到了紫色的线，最值并不符合函数关系
 
 ***
 
@@ -80,7 +68,7 @@ We shall make extensive use of this result when we discuss sampling methods in C
 
 
 用下标表示which variable is being averaged over，
-在 $\mathbb {E}_{x}[f(x,y)]$ 中，是对$x$取平均， $\mathbb {E}_{x}[f(x,y)]$ will be a function of $y$.
+在 $\mathbb{E}_{x}f(x,y)$ 中，是对 $x$ 取平均， $\mathbb{E}_{x}f(x,y)$ will be a function of $y$ .
 
 
 ***Conditional Expectation***
