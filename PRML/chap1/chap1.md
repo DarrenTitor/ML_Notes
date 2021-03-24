@@ -68,7 +68,7 @@ We shall make extensive use of this result when we discuss sampling methods in C
 
 
 用下标表示which variable is being averaged over，
-在 $\mathbb{E}_{x}[f(x,y)]$ 中，是对$x$取平均， $\mathbb{E}_{x}[f(x,y)]$ will be a function of $y$.
+在 $\mathbb {E}_{x}[f(x,y)]$ 中，是对$x$取平均， $\mathbb {E}_{x}[f(x,y)]$ will be a function of $y$.
 
 
 ***Conditional Expectation***
