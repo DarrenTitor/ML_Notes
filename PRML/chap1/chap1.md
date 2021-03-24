@@ -57,7 +57,7 @@ The probability that x will lie in an interval (a, b) is then given by
 需要注意的是，当 $x=g(y)$ 为线性变化时，$g^{\prime\prime}(y)=0$ ，因此上面式子里的第二项就没有了，此时关系保持。
 
 ![](Pasted%20image%2020210324222232.png)
-上图中，从$x$变换到$y$经历了一个非线性变换。如果不考虑jacobian factor，应该是红线转移到绿线，最值保持函数关系。但是因为有jacobian factor，实际上转移到了紫色的线，最值并不符合函数关系
+上图中，从$ x $变换到$ y $经历了一个非线性变换。如果不考虑jacobian factor，应该是红线转移到绿线，最值保持函数关系。但是因为有jacobian factor，实际上转移到了紫色的线，最值并不符合函数关系
 
 ***
 
@@ -74,9 +74,9 @@ The sum and product rules
 Expectation of f(x)：
 ![](Pasted%20image%2020210324223635.png)
 ![](Pasted%20image%2020210324223649.png)
-可以用有限的$N$次sample近似求expectation：
+可以用有限的$ N $次sample近似求expectation：
 ![](Pasted%20image%2020210324223840.png)
-We shall make extensive use of this result when we discuss sampling methods in Chapter 11. The approximation in (1.35) becomes **exact** in the limit $ {N\to\infty} $ .
+We shall make extensive use of this result when we discuss sampling methods in Chapter 11. The approximation in (1.35) becomes **exact** in the limit $ N\to\infty $ .
 
 
 用下标表示which variable is being averaged over，
