@@ -4,7 +4,7 @@
 
 blah blah blah
 
-[back](../doc/index.md)
+[back](../index.md)
 
 
 
