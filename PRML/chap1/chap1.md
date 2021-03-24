@@ -76,11 +76,11 @@ Expectation of f(x)：
 ![](Pasted%20image%2020210324223649.png)
 可以用有限的$ N $次sample近似求expectation：
 ![](Pasted%20image%2020210324223840.png)
-We shall make extensive use of this result when we discuss sampling methods in Chapter 11. The approximation in (1.35) becomes **exact** in the limit $ N\to\infty $ .
+We shall make extensive use of this result when we discuss sampling methods in Chapter 11. The approximation in (1.35) becomes **exact** in the limit $ N\to\infty $.
 
 
 用下标表示which variable is being averaged over，
-在 $ {E}_{x}f(x,y) $ 中，是对 $ x $ 取平均， $${\mathbb{E}}_{x}[f(x,y)]$$ will be a function of $$y$$ .
+在 $ {E}_{x}f(x,y) $ 中，是对 $ x $ 取平均， $ {E}_{x}[f(x,y)] $ will be a function of $ y $ .
 
 
 ***Conditional Expectation***
@@ -92,4 +92,4 @@ Variance:
 ![](Pasted%20image%2020210324230211.png)
 ![](Pasted%20image%2020210324230237.png)
 ![](Pasted%20image%2020210324230247.png)
-If we consider the covariance of the components of a vector x with each other, then we use a slightly simpler notation $cov[\mathrm {x}]\equiv cov[\mathrm {x}, \mathrm {x}]$.
+If we consider the covariance of the components of a vector x with each other, then we use a slightly simpler notation $ cov[\mathrm {x}]\equiv cov[\mathrm {x}, \mathrm {x}] $.
