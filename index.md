@@ -4,7 +4,7 @@
 
 
 
-[./PRML/chap1.md](第一章)
+[第一章](./PRML/chap1.md)
 
 
 
