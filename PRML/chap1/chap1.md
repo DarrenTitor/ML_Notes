@@ -10,10 +10,13 @@
 We can view the denominator in Bayes’ theorem as being the normalization constant required to ensure that the sum of the conditional probability on the left-hand side of (1.12) over all values of Y equals one.
 
 ***
+
 If we had been asked which box had been chosen before being told the identity of the selected item of fruit, then the most complete information we have available is provided by the probability p(B). We call this the **prior probability** because it is the probability available before we observe the identity of the fruit. 
 
 Once we are told that the fruit is an orange, we can then use Bayes’ theorem to compute the probability p(B|F), which we shall call the **posterior probability** because it is the probability obtained after we have observed F.
+
 ***
+
 We note that if the joint distribution of two variables factorizes into the product of the marginals, so that p(X, Y ) = p(X)p(Y ), then X and Y are said to be **independent**. From the product rule, we see that p(Y |X) = p(Y ), and so the conditional distribution of Y given X is indeed independent of the value of X.
 
 ## 1.2.1 Probability densities
@@ -23,6 +26,7 @@ The probability that x will lie in an interval (a, b) is then given by
 ![](Pasted%20image%2020210324210521.png)
 
 ***
+
 下面这里提到了一个jacobian factor，大概意思就是：
 概率密度函数和普通的函数是不同的。
 **在pdf中，如果两个随机变量有非线性的函数关系，这两个函数的pdf不会保持这种关系。**
@@ -42,7 +46,9 @@ The probability that x will lie in an interval (a, b) is then given by
 
 ![](Pasted%20image%2020210324222232.png)
 上图中，从$x$变换到$y$经历了一个非线性变换。如果不考虑jacobian factor，应该是红线转移到绿线，最值保持函数关系。但是因为有jacobian factor，实际上转移到了紫色的线，最值并不符合函数关系
+
 ***
+
 cumulative distribution function：
 ![](Pasted%20image%2020210324222703.png)
 
