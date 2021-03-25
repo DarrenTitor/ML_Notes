@@ -81,3 +81,91 @@ Variance:
 ![](Pasted%20image%2020210324230237.png)
 ![](Pasted%20image%2020210324230247.png)
 If we consider the covariance of the components of a vector x with each other, then we use a slightly simpler notation $cov[\mathrm {x}]\equiv cov[\mathrm {x}, \mathrm {x}]$.
+ ## 1.2.3 Bayesian probabilities
+ 对于不可重复的实验，如冰川会不会融化，我们不能通过频率来描述uncertainty，这时候要通过probability来描述。此时每当我们掌握了一些新的证据，都会对原有的估计加以修正，这就是bayesian的思路。
+ 
+ prior, posterior, likelihood之间的关系，这个应该看了好多遍了：
+ ![](Pasted%20image%2020210325150440.png)
+ ![](Pasted%20image%2020210325150459.png)
+ 分母是normalization term，因为如果左右两边同时对$\mathrm{w}$积分：
+ ![](Pasted%20image%2020210325150708.png)
+ 
+ ***
+ 
+ In a frequentist setting, $\mathrm{w}$ is considered to be a **fixed** parameter, whose value is determined by some form of ‘estimator’, and error bars on this estimate are obtained by considering the distribution of possible data sets $\mathcal{D}$. 
+ By contrast, from the Bayesian viewpoint there is only a single data set $\mathcal{D}$ (namely the one that is actually observed), and the **uncertainty in the parameters is expressed through a probability distribution over $\mathrm{w}$.**
+ 
+ ***
+ 
+ ## 1.2.4 The Gaussian distribution
+ ![](Pasted%20image%2020210325151909.png)
+ The square root of the variance σ, is called the *standard deviation*
+ β = 1/σ2, is called the *precision*
+ ![](Pasted%20image%2020210325152145.png)
+ ![](Pasted%20image%2020210325152155.png)
+ ![](Pasted%20image%2020210325152218.png)
+ 
+ ![](Pasted%20image%2020210325152313.png)
+ 
+ 
+ One common criterion for determining the parameters in a probability distribution using an observed data set is to find the parameter values that maximize the likelihood function. 
+ This might seem like a strange criterion because, from our foregoing discussion of probability theory, **it would seem more natural to maximize the probability of the parameters given the data, not the probability of the data given the parameters.**
+ 
+ MLE得到的$\mu_{ML}$就是sample mean，$\sigma_{ML}$就是sample variance
+ ![](Pasted%20image%2020210325170548.png)
+ ![](Pasted%20image%2020210325170557.png)
+ ![](Pasted%20image%2020210325170606.png)
+ 
+ maximum likelihood approach systematically underestimates the variance of the distribution.
+ ![](Pasted%20image%2020210325171017.png)
+ 
+ ## 1.2.5 Curve fitting re-visited
+ 
+ we shall assume that, given the value of x, the corresponding value of t has a Gaussian distribution with a mean equal to the value y(x, w) of the polynomial curve
+ ![](Pasted%20image%2020210325193340.png)
+ 写出likelihood：
+ ![](Pasted%20image%2020210325193715.png)
+ 求log，后两项与$\mathrm{w}$无关
+ ![](Pasted%20image%2020210325193824.png)
+ the sum-of-squares error function has arisen as a consequence of **maximizing likelihood under the assumption of a Gaussian noise distribution**
+ 
+ 同时，对$\beta$求导，可以得出
+ ![](Pasted%20image%2020210325194125.png)
+ 此时就可以用这个分布进行预测了
+ ![](Pasted%20image%2020210325194319.png)
+ 
+ ***
+ 
+ introduce a prior distribution over the polynomial coefficients $\mathrm{w}$
+ ![](Pasted%20image%2020210325200842.png)
+ 此时likelihood：
+ ![](Pasted%20image%2020210325203838.png)
+ 可以看到相当于加入了正则项：
+ ![](Pasted%20image%2020210325203913.png)
+ This technique is called **maximum posterior**, or simply **MAP**.
+ 
+ ## 1.2.6 Bayesian curve fitting
+ 虽然前面求出了$\mathrm{w}$的后验，但这不能算是完成的bayesian treatment。we should consistently apply the sum and product rules of probability, which requires, as we shall see shortly, that we integrate over all values of $\mathrm{w}$。
+ 
+We therefore wish to evaluate the predictive distribution $p(t|x, \mathbf{x}, \mathbf{t})$(这里设$\alpha$和$\beta$已知)
+![](Pasted%20image%2020210325222016.png)
+其中
+![](Pasted%20image%2020210325222034.png)
+Here p(w|x, t) is the posterior distribution，通过$\frac{prior\times likelihood}{normalization\space term}$得到，section3.3中可知，对于curve fitting，posterior也是一个gaussian
+
+此外更进一步。预测结果也是一个gaussian：
+![](Pasted%20image%2020210325223259.png)
+The first term in (1.71) represents the uncertainty in the predicted value of t due to the noise on the target variables and was expressed already in the maximum likelihood predictive distribution (1.64) through ${β^{-1}_{ML}}$. However, the second term arises from the uncertainty in the parameters w and is a consequence of the Bayesian treatment.
+
+
+## 1.3. Model Selection
+Akaike information criterion, or AIC chooses the model for which the quantity ![](Pasted%20image%2020210325224119.png)
+is largest. Here p(D|wML) is the best-fit log likelihood, and **M is the number of adjustable parameters in the model.**
+
+section 4.4.1中要讲到 Bayesian information criterion, or BIC
+Such criteria do not take account of the uncertainty in the model parameters, 
+however, and in practice they tend to favour overly simple models. We therefore turn in Section 3.4 to a fully Bayesian approach where we shall see how complexity penalties arise in a natural and principled way.
+
+## 1.5. Decision Theory
+作用：Here we turn to a discussion of decision theory that, **when combined with probability theory, allows us to make optimal decisions in situations involving uncertainty** such as those encountered in pattern recognition.
+
