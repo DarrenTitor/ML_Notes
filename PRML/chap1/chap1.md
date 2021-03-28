@@ -169,3 +169,147 @@ however, and in practice they tend to favour overly simple models. We therefore 
 ## 1.5. Decision Theory
 作用：Here we turn to a discussion of decision theory that, **when combined with probability theory, allows us to make optimal decisions in situations involving uncertainty** such as those encountered in pattern recognition.
 
+Determination of p(x, t) from a set of training data is an example of **inference** and is typically a very difficult problem whose solution forms the subject of much of this book
+
+![](Pasted%20image%2020210326004340.png)
+
+### 1.5.3 The reject option
+In some applications, it will be appropriate to avoid making decisions on the difficult cases in anticipation of a lower error rate on those examples for which a classification decision is made. This is known as the **reject option**.
+
+### 1.5.4 Inference and decision
+We have broken the classification problem down into two separate stages
+
+**inference stage** in which we use training data to learn a model for p(Ck|x)
+**decision stage** in which we use these posterior probabilities to make optimal class assignments
+
+如果直接learn a function，把输入映射到决策中，就是discriminant function
+
+下面这里讲了三种模型：generative, discrimitive和直接映射到0和1
+![](Pasted%20image%2020210326011503.png)
+
+
+### 1.5.5 Loss functions for regression
+
+之前说的都是分类问题，对于回归问题，我们想要minimize的loss的期望可以表示为：
+![](Pasted%20image%2020210326081315.png)
+比如说square loss：
+![](Pasted%20image%2020210326081806.png)
+下面这一段是对上面这个式子求导，要用到variational calculus（对于函数求导），需要看一下appendix D
+![](Pasted%20image%2020210326082026.png)
+
+which is the conditional average of t conditioned on x and is known as the **regression function**
+
+可以看到regression function $\mathbb{E}_{t}[t|x]$，可以minimize square loss的期望，是由$p(t|x)$的均值得到的
+
+
+因为$\mathbb{E}_{t}[t|x]$是最优解， ${y(x) − \mathbb{E}[t|x]}$的期望是0，因此交叉项消失
+![](Pasted%20image%2020210326084639.png)
+而由(1.90)的前半部分也可以得出之前的结论，即最优解是由conditional mean $\mathbb{E}_{t}[t|x]$得出的
+
+第二项则是target的variance，因此预测出的target的不同可以看作噪声。而因为这项与y(x)无关，因此这个方差是去不掉的
+
+***
+
+类比分类问题，回归问题也可以分为三类：
+![](Pasted%20image%2020210326085713.png)
+![](Pasted%20image%2020210326085725.png)
+
+
+### 1.6. Information Theory
+
+引出$h(x)$:
+我们用$h(x)$描述degree of surprise，显然$h(x)$与$p(x)$相关
+当x和y独立时，我们观察x的surprise+观察y的surprise应该等于同时观察x和y的surprise，即$h(x,y)=h(x)+h(y)$
+而又有$p(x,y)=p(x)\cdotp(y)$
+因此可以定义information
+![](Pasted%20image%2020210326092618.png)
+
+传输一个变量x的$h(x)$的期望，就是x的entropy
+![](Pasted%20image%2020210326093022.png)
+
+之后的讨论中，entropy的底数为e
+
+***
+
+multiplicity：
+把N个相同的物体分到n个箱子中的分法：
+首先选第一个物体有N种选法，第二个物体有N-1种选法。一共有$N!$种选法
+而n个箱子内部本身是无序的，因此最终结果为：
+![](Pasted%20image%2020210326103126.png)
+which is called the **multiplicity**
+
+
+而entropy则是 **logarithm of the multiplicity scaled by an appropriate constant**
+![](Pasted%20image%2020210326103244.png)
+
+***
+
+离散值的熵：
+![](Pasted%20image%2020210326110557.png)
+对于连续值，differential entropy：
+![](Pasted%20image%2020210326110634.png)
+
+对于离散变量，用拉格朗日maximize extropy得到uniform distribution
+
+
+对于连续变量，用拉格朗日maximize extropy得到Gaussian distribution
+
+***
+
+conditional entropy：
+如果对于变量x和y，我们先观察到了y，那么观察x得到的信息量为−ln p(y|x)，x此时的条件熵为：
+![](Pasted%20image%2020210326110806.png)
+
+条件熵满足
+![](Pasted%20image%2020210326110946.png)
+where $H[x, y]$ is the differential entropy of $p(x, y)$ and $H[x]$ is the differential entropy of the marginal distribution $p(x)$
+
+
+### 1.6.1 Relative entropy and mutual information
+Consider some unknown distribution $p(x)$, and suppose that we have modelled this using an approximating distribution $q(x)$. 
+If we use $q(x)$ to construct a coding scheme for the purpose of transmitting values of $x$ to a receiver, then the average **additional** amount of information (in nats) required to specify the value of $x$ (assuming we choose an efficient coding scheme) as a result of using $q(x$) instead of the true distribution $p(x)$ is given by
+![](Pasted%20image%2020210326111431.png)
+This is known as the relative entropy or Kullback-Leibler divergence,or KL divergence
+KL(p||q) >=0 with equality if, and only if, p(x)= q(x).
+
+***
+
+后面要用到jensen不等式，因此先说明凸函数的定义：
+![](Pasted%20image%2020210326115503.png)
+This is equivalent to the requirement that the second derivative of the function be everywhere positive
+
+![](Pasted%20image%2020210326120018.png)
+
+
+we can interpret the Kullback-Leibler divergence as a measure of the dissimilarity of the two distributions p(x) and q(x).
+
+
+KL divergence实际上求不出来，因为我们不知道真正的p(x).
+但是我们知道由p(x)产生的N个x
+因此p(x)可以用$p(\mathrm{x})$近似
+
+
+![](Pasted%20image%2020210329005907.png)
+
+![](Pasted%20image%2020210329005953.png)
+Thus we see that **minimizing this Kullback-Leibler divergence is equivalent to maximizing the likelihood function**
+
+
+***
+
+Mutual information
+
+对于joint distribution中的一组变量x和y，如果它们不独立，就不能表示为p(x, y)= p(x)p(y)
+但是，我们可以用KL divergence衡量它们之间“有多么不独立”
+
+![](Pasted%20image%2020210329010426.png)
+I(x, y) >= 0 with equality if, and only if, x and y are independent
+
+mutual information is related to the conditional entropy through
+![](Pasted%20image%2020210329010614.png)
+推导：
+![](Pasted%20image%2020210329010626.png)
+
+Thus we can view the mutual information as the reduction in the uncertainty about x by virtue of being told the value of y (or vice versa). 
+我们可以把mutual information看作是观察到y之后，对于x的uncertainty减少了多少（通过entropy和conditional entropy来衡量）
+或者我们可以把p(x)看作先验，p(x|y)看作是后验。mutual information表示观测到y之后the reduction in uncertainty about x
