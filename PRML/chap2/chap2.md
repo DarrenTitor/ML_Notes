@@ -133,9 +133,7 @@ As for the case of the binomial distribution with its beta prior, we can interpr
 ## 2.3. The Gaussian Distribution
 
 ![](Pasted%20image%2020210331170733.png)
-$\mathcal{N}(x|\mu,\sigma^{2})=\frac{1}{(2\pi\sigma^{2})^{\frac{1}{2}}}exp\left \{{
--\frac{1}{2\sigma^{2}}(x-\mu)^{2}
-}\right \}$
+$\mathcal{N}(x|\mu,\sigma^{2})=\frac{1}{(2\pi\sigma^{2})^{\frac{1}{2}}}exp\left \{{-\frac{1}{2\sigma^{2}}(x-\mu)^{2}}\right \}$
 
 ***
 
