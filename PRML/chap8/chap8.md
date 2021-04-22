@@ -1,6 +1,3 @@
-# 8. GRAPHICAL MODELS
-
-
 **probabilistic graphical models**
 
 In a probabilistic graphical model, each node represents a random variable (or group of random variables), and the links express probabilistic relationships between these variables.
@@ -92,7 +89,6 @@ Two cases are particularly worthy of note, namely when the parent and child node
 
 ***
 Discrete $\to$ Discrete
-
 
 ***
 Gaussian $\to$ Gaussian
