@@ -114,36 +114,3 @@ joint distribution of the quantities m1,...,mK, conditioned on the parameters µ
 ![](Pasted%20image%2020210331145038.png)
 
 ### 2.2.1 The Dirichlet distribution
-![](Pasted%20image%2020210331170110.png)
-![](Pasted%20image%2020210331170120.png)
-
-后验的形式：
-![](Pasted%20image%2020210331170207.png)
-
-可见后验也是一个Dirichlet
-由此通过观察，我们可以得到后验normalization term的参数：
-![](Pasted%20image%2020210331170336.png)
-其中where we have denoted m =(m1,...,mK)T.
-
-
-Beta与Dirichlet的关系：
-As for the case of the binomial distribution with its beta prior, we can interpret the parameters $\alpha_{k}$ of the Dirichlet prior as an effective number of observations of $x_{k}=1$.
-
-
-## 2.3. The Gaussian Distribution
-
-![](Pasted%20image%2020210331170733.png)
-$\mathcal{N}(x|\mu,\sigma^{2})=\frac{1}{(2\pi\sigma^{2})^{\frac{1}{2}}}exp\left \{{
--\frac{1}{2\sigma^{2}}(x-\mu)^{2}
-}\right \}$
-
-***
-
-geometrical form
-
-gaussian中与$\mathrm{x}$有关的只有
-![](Pasted%20image%2020210331172407.png)
-位于指数部分。这一部分称为μ与x的Mahalanobis distance。
-当Σ为identity matrix时，reduce to Euclidean distance。
-
-
