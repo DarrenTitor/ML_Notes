@@ -4,5 +4,8 @@
 
 就直接从obsidian粘贴到这里，仅作备份
 
-[第一章](https://github.com/DarrenTitor/ML_Notes/tree/eb0d09c43c5d13c4fe22f9cd795d46923d922813/PRML/chap1/chap1/README.md)
+[Chapter 1](./PRML/chap1/chap1)
+[Chapter 2](./PRML/chap2/chap2)
+[Chapter 3](./PRML/chap3/chap3)
+[Chapter 8](./PRML/chap8/chap8)
 
