@@ -120,3 +120,60 @@ log of posterior:
 If we used localized basis functions such as Gaussians, then in regions away from the basis function centres, the contribution from the second term in the predictive variance (3.59) will go to zero, leaving only the noise contribution β−1. 
 
 Thus, the model becomes very confident in its predictions when extrapolating outside the region occupied by the basis functions, which is generally an undesirable behaviour. This problem can be avoided by adopting an alternative Bayesian approach to regression known as a **Gaussian process**.
+
+### 3.3.3 Equivalent kernel
+
+the predictive mean can be written in the form
+![](Pasted%20image%2020210422092728.png)
+
+这个式子可以写成kernel的形式，解释为所有数据的线性组合：
+![](Pasted%20image%2020210422092938.png)
+这个的kernel叫做 smoother matrix or the equivalent kernel
+Regression functions, such as this, which make predictions by taking linear combinations of the training set target values are known as **linear smoothers**.
+
+以上我们先找了basis function，然后找到等价的kernel。其实我们还可以直接定义一个local kernel，直接用已知的所有数据做预测。这就是Gaussian processes
+
+![](Pasted%20image%2020210422094134.png)
+
+equivalent kernel和其他所有kernel都有一个重要的性质，it can be expressed in the form an inner product with respect to a vector ψ(x) of nonlinear functions
+![](Pasted%20image%2020210422094657.png)
+
+## 3.5. The Evidence Approximation
+
+在fully Bayesian treatment中，我们要为超参数α和β设先验，and make predictions by marginalizing with respect to these hyperparameters as well as with respect to the parameters w. 但是实际上这样的积分是intractable的。
+
+Here we discuss an approximation in which we set the hyperparameters to specific values determined by maximizing the marginal likelihood function obtained by first integrating over the parameters w
+（我们先对w积分，然后用MLE确定hyperparameters）
+
+这种方法有好几个名字：empirical Bayes, type 2 maximum likelihood, generalized maximum likelihood, evidence approximation
+
+
+精确的写法应该是这样
+![](Pasted%20image%2020210422100421.png)
+但如果p(α, β|t)中，α, β都sharply peaked，那么就可以把这两个参数固定，近似为下面的式子
+![](Pasted%20image%2020210422100529.png)
+
+α, β的后验由下面这个式子决定，
+![](Pasted%20image%2020210422100712.png)
+If the prior is relatively flat, then in the evidence framework the values of α and β 就可以通过maxmize likelihood 得到，这里的MLE是通过所有的training data直接得到α, β，而不用cross-validation
+Recall that the ratio α/β is analogous to a regularization parameter.
+
+***
+
+Returning to the evidence framework, we note that there are two approaches that we can take to the maximization of the log evidence
+
+* evaluate the evidence function analytically and then set its derivative equal to zero to obtain re-estimation equations for α and β, which we shall do in Section 3.5.2
+* use a technique called the expectation maximization (EM) algorithm
+
+
+
+
+The marginal likelihood function p(t|α, β) is obtained by integrating over the weight parameters w, so that
+![](Pasted%20image%2020210422104412.png)
+其中，代入
+![](Pasted%20image%2020210422104248.png)
+![](Pasted%20image%2020210422104308.png)
+可以得到
+![](Pasted%20image%2020210422104456.png)
+![](Pasted%20image%2020210422104504.png)
+
