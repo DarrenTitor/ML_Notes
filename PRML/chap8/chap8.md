@@ -150,3 +150,83 @@ v所在的协方差矩阵is a general symmetric covariance matrix
 Note that we have already encountered a specific example of the linear-Gaussian relationship when we saw that the conjugate prior for the mean µ of a Gaussian
 variable x is itself a Gaussian distribution over µ. The joint distribution over x and µ is therefore Gaussian. This corresponds to a simple two-node graph in which the node representing µ is the parent of the node representing x. The mean of the distribution over µ is a parameter controlling a prior, and so it can be viewed as a hyperparameter. Because the value of this hyperparameter may itself be unknown, we can again treat it from a Bayesian perspective by introducing a prior over the hyperparameter, sometimes called a hyperprior, which is again given by a Gaussian distribution. This type of construction can be extended in principle to any level and is an illustration of a hierarchical Bayesian model, of which we shall encounter further examples in later chapters.
 
+## 8.2. Conditional Independence
+对于变量a, b, c, 如果有
+![](Pasted%20image%2020210422214122.png)
+就称a is conditionally independent of b given c
+
+当表示joint distribution时，表达式稍有不同，带入上面的式子就行：
+![](Pasted%20image%2020210422214439.png)
+（本质其实是p(a, b)=p(a)p(b)，只不过多了个condition）
+
+conditional independence 要求上面这两个式子对变量的任意取值都要成立，而不是某些值
+
+可以简写为：
+![](Pasted%20image%2020210422214816.png)
+
+
+
+conditional independence可以从graph中直接读出，不需要任何计算
+The general framework for achieving this is called d-separation, where the ‘d’ stands for ‘directed’
+
+### 8.2.1 Three example graphs
+
+#### case_1
+![](Pasted%20image%2020210422215337.png)
+对于上面的gragh，可以写出下面的分布：
+![](Pasted%20image%2020210422215532.png)
+* 如果没有变量被观测，为了求p(a,b)，我们会marginalizing both sides of (8.23) with respect to c to give
+![](Pasted%20image%2020210422215618.png)
+这个得不出p(a)p(b)，因此得不出conditional independence，可以记作
+![](Pasted%20image%2020210422215758.png)
+
+
+* *假设c被观测了，或者说we condition on the variable c**，
+由于本身graph都可以写成
+![](Pasted%20image%2020210422220311.png)
+为了求a, b的joint，我们可以直接把上边这个式子同除p(c)
+![](Pasted%20image%2020210422220012.png)
+
+(换句话说，从graph中得不到p(a,b)=p(a)p(b)，但是有p(a,b|c)=p(a|c)p(b|c))
+
+总结：
+The node c is said to be **tail-to-tail** with respect to this path because the node is connected to the tails of the two arrows,
+**when we condition on node c, the conditioned node ‘blocks’ the path from a to b and causes a and b to become (conditionally) independent.**
+(这里tail-to-tail的这个to就很迷惑，最好记成"and"，tail&tail, head&head, head&tail)
+
+#### case_2
+![](Pasted%20image%2020210422221418.png)
+同样，先写出
+![](Pasted%20image%2020210422221848.png)
+
+* 当没有condition c时，a，b没有独立
+![](Pasted%20image%2020210422221959.png)
+![](Pasted%20image%2020210422222014.png)
+
+* condition c之后，
+![](Pasted%20image%2020210422222109.png)
+
+总结：
+**head-to-tail**
+Such a path connects nodes a and b and renders them dependent. **If we now observe c, then this observation ‘blocks’ the path from a to b and so we obtain the conditional independence property**
+
+
+#### case_3
+![](Pasted%20image%2020210422231156.png)
+This graph has rather different properties from the two previous examples
+
+先写出
+![](Pasted%20image%2020210422231323.png)
+
+* Consider first the case where none of the variables are observed. Marginalizing both sides of (8.28) over c we obtain
+![](Pasted%20image%2020210422231422.png)
+and so **a and b are independent with no variables observed**, in contrast to the two previous examples
+观测前独立
+![](Pasted%20image%2020210422231534.png)
+
+* Now suppose we condition on c,观测之后不独立
+![](Pasted%20image%2020210422231738.png)
+
+总结：
+**head-to-head**
+When node c is **unobserved**, it ‘blocks’ the path, and the variables a and b are **independent**. However, **conditioning** on c ‘unblocks’ the path and renders a and b **dependent**.
