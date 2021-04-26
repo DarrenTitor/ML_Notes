@@ -230,3 +230,316 @@ and so **a and b are independent with no variables observed**, in contrast to th
 总结：
 **head-to-head**
 When node c is **unobserved**, it ‘blocks’ the path, and the variables a and b are **independent**. However, **conditioning** on c ‘unblocks’ the path and renders a and b **dependent**.
+另外还有一个结论：**a head-to-head path will become unblocked if either the node, or any ofits descendants, is observed**，也就是说，观测c和观测c的后代可以起到同样的作用
+
+### 8.2.2 D-separation
+
+A, B, C是三个node的集合，没有交集
+![](Pasted%20image%2020210424142519.png)
+
+note：
+parameters用small filled circles表示，理论上相当于observed nodes. However, there are no marginal distributions associated with such nodes.** Consequently they play no role in d-separation.**
+
+We can view a graphical model (in this case a directed graph) as a filter in which a probability distribution p(x) is allowed through the filter if, and only if, it satisfies the directed factorization property (8.5)
+![](Pasted%20image%2020210424145743.png)
+We can alternatively use the graph to filter distributions according to whether they respect all of the conditional independencies implied by the d-separation properties of the graph.
+根据d-separation theorem，上面两种方法得到的结果是一样的
+
+#### **Markov blanket** or **Markov boundary**
+The set of nodes comprising the parents, the children and the co-parents is called the **Markov blanket** 
+![](Pasted%20image%2020210424151340.png)
+
+We can think of the Markov blanket of a node xi as being the minimal set of nodes that isolates xi from the rest of the graph.
+
+the conditional distribution of xi, conditioned on all the remaining variables in the graph, is dependent only on the variables in the Markov blanket.
+
+
+## 8.3. Markov Random Fields
+
+### 8.3.1 Conditional independence properties
+
+We might ask whether it is possible to define an alternative graphical semantics for probability distributions such that conditional independence is determined by simple graph separation. This is indeed the case and corresponds to undirected graphical models. 也就是说undirected graph不需要复杂的separation，只需要在graph上直接分割
+
+**If all such paths pass through one or more nodes in set C, then all such paths are ‘blocked’ and so the conditional independence property holds. **
+However, if there is at least one such path that is not blocked, then the property does not necessarily hold, or more precisely there will exist at least some distributions corresponding to the graph that do not satisfy this conditional independence relation. 
+
+![](Pasted%20image%2020210424152954.png)
+
+**The Markov blanket for an undirected graph** takes a particularly simple form, because a node will be conditionally independent of all other nodes conditioned **only on the neighbouring nodes**
+![](Pasted%20image%2020210424153232.png)
+
+### 8.3.2 Factorization properties
+我们想expressing the joint distribution p(x) as a product of functions defined over sets of variables that are local to the graph.
+
+If we consider two nodes xi and xj that are not connected by a link, then these variables must be conditionally independent given all other nodes in the graph.
+也就是说相邻节点一定相关，也就拆不开了，写不成乘积形式
+![](Pasted%20image%2020210424154351.png)
+
+clique：the set of nodes in a clique is fully connected
+
+
+![](Pasted%20image%2020210424160241.png)
+这里提到了两个函数，potential functions和partition function，partition function只是用于normalization的
+
+** Note that we do not restrict the choice of potential functions to those that have a specific probabilistic interpretation as marginal or conditional distributions. **
+与有向图不同，有向图中，p(x)拆成许多条件概率的乘积
+在无向图中，不要求potential functions必须是marginal or conditional distributions
+
+The presence of this normalization constant is one of the major limitations of undirected graphs.
+If we have a model with M discrete nodes each having K states, 则partition function是$K^M$项求和
+
+如果我们想要得到connection between conditional independence and factorization for undirected graphs，就要约束$\Psi_C(x_C)$ are strictly positive
+
+由于potential functions严格大于0，因此可以写成指数的形式
+![](Pasted%20image%2020210424162826.png)
+where E(xC) is called an **energy function**, and the exponential representation is called the **Boltzmann distribution**
+The joint distribution是potential的乘积，so the total energy is obtained by adding the energies of each of the maximal cliques.
+
+### 8.3.4 Relation to directed graphs
+#### directed -> undirected
+先考虑最简单的directed chain，在chain中，maximal cliques are simply the pairs of neighbouring nodes
+让这两个式子对应
+![](Pasted%20image%2020210426195618.png)
+![](Pasted%20image%2020210426195625.png)
+就有
+![](Pasted%20image%2020210426195654.png)
+
+下面考虑general的情况：
+要想转化，就要用clique的potential表示conditional distributions。
+In order for this to be valid, **we must ensure that the set of variables that appears in each of the conditional distributions is a member of at least one clique of the undirected graph** 也就是说，要想达成这个，有向图中的每个节点，都要至少出现在某一个minimal clique中，不然就会把这个节点漏掉
+
+如果有向图中的子节点只有一个parent，那么只需要把箭头直接变成edge，然后把node pair视为minimal clique
+但是当一个子节点有多个parent时，也就是"head to head"时，不能直接转化。To ensure this, we add extra links between all pairs of parents of the node
+Anachronistically, this process of ‘marrying the parents’ has become known as **moralization**,
+and the resulting undirected graph, after dropping the arrows, is called the **moral graph**
+需要注意的是，在moralization的过程中，哟可能会丢到conditiona independence，比如下面这个例子：
+![](Pasted%20image%2020210426201511.png)
+
+Steps:
+1. add additional undirected links between all pairs of parents for each node in the graph and then drop the arrows on the original links to give the moral graph
+2. initialize all of the clique potentials of the moral graph to 1
+3. take each conditional distribution factor in the original directed graph and multiply it into one of the clique potentials
+4. in all cases the partition function is given by Z=1
+
+
+
+#### undirected -> directed
+Converting from an undirected to a directed representation is much less common and in general presents problems due to the normalization constraints
+
+#### difference
+It turns out that the two types of graph can **express different conditional independence properties**
+
+
+## 8.4. Inference in Graphical Models
+
+### 8.4.1 Inference on a chain
+
+我们这里只需要讨论无向图。因为有向图可以直接转化为无向图。We have
+already seen that the directed chain can be transformed into an equivalent undirected chain. Because the directed graph does not have any nodes with more than one parent, this does not require the addition of any extra links, and the directed and undirected versions of this graph express exactly the same set of conditional independence statements.
+
+![](Pasted%20image%2020210426121756.png)
+
+上边的chain可以写成下面的potential，同时我们假设变量都是离散的，每个变量有K个状态
+![](Pasted%20image%2020210426121959.png)
+
+Let us consider the inference problem of **finding the marginal distribution $p(x_n)$** for a specific node $x_n$ that is part way along the chain.
+
+为了避免指数级的求和运算， exploiting the conditional independence properties of the graphical model
+
+思想：
+把![](Pasted%20image%2020210426122616.png)代入![](Pasted%20image%2020210426122630.png)，然后观察
+
+先看the summation over$x_N$, 我们知道$x_N$只与$x_{N-1}$相关，因此我们可以通过$x_N$与$x_{N-1}$的potential得到二者的joint，再在$x_N$上求和，就能得到$x_{N-1}$的分布
+![](Pasted%20image%2020210426122948.png)
+
+以此类推，Because each summation effectively removes a variable from the distribution, this can be viewed as the removal of a node from the graph.
+
+we can express the desired marginal in the form
+![](Pasted%20image%2020210426123338.png)
+这个式子没有增加什么新东西，只是把(8.50)重新排序
+这个式子的复杂度为$O(NK^2)$
+
+
+#### passing of local messages
+We now give a powerful interpretation of this calculation in terms of the **passing of local messages** around on the graph.
+
+marginal $x_N$ 可以分解为两项之积以及normalization term
+![](Pasted%20image%2020210426153533.png)
+
+We shall interpret $µ_α(x_n)$ as a message passed forwards along the chain from node $x_{n−1}$ to node $x_n$. 
+Similarly, $µ_β(x_n)$ can be viewed as a message passed backwards along the chain to node $x_n$ from node $x_{n+1}$. 
+注意$\mu$只代表相邻一项传过来的信息
+Note that each of the messages comprises a set of K values, one for each choice of xn, and so the product of two messages should be interpreted as the **point-wise multiplication** of the elements of the two messages to give another set of K values.
+
+因此可以得出递归式：
+![](Pasted%20image%2020210426154820.png)
+![](Pasted%20image%2020210426154829.png)
+因此因为头和尾没有μ，因此可以递归计算，如：
+![](Pasted%20image%2020210426160015.png)
+![](Pasted%20image%2020210426155804.png)
+注意脚标：The outgoing message $µ_α(x_n)$ in (8.55) is obtained by multiplying the incoming message $µ_α(x_{n-1})$ by the local potential involving **the node variable and the outgoing variable** and then summing over **the node variable**.
+
+这个图叫做**Markov chains**，and the corresponding message passing equations represent an example of the **ChapmanKolmogorov equations** for Markov processes
+
+如果想得到chain上每个变量的marginal，就可以先从$x_N$开始求出所有的$µ_\beta(x_i)$，从从$x_1$开始求出所有的$µ_\alpha(x_i)$。把所有的结果存起来，然后再算marginal。
+
+如果有某些变量被观测：If some of the nodes in the graph are observed, then **the corresponding variables are simply clamped to their observed values and there is no summation**.
+
+相邻两个变量的joint distribution：$p(x_{n-1}, x_n)$
+This is similar to the evaluation of the marginal for a single node, except that there are now two variables that are not summed out.
+![](Pasted%20image%2020210426163108.png)
+![](Pasted%20image%2020210426163122.png)
+
+
+### 8.4.2 Trees
+
+* In the case of an undirected graph, a tree is defined as:
+**a graph in which there is one, and only one, path between any pair of nodes.**
+Such graphs therefore do not have loops. 
+
+* In the case of directed graphs, a tree is defined such that:
+**there is a single node, called the root, which has no parents, and all other nodes have one parent**
+
+![](Pasted%20image%2020210426164355.png)
+
+the moralization step will not add any links as all nodes have at most one parent, and as a consequence the corresponding moralized graph will be an undirected tree
+
+**If there are nodes in a directed graph that have more than one parent, but there is still only one path (ignoring the direction of the arrows) between any two nodes**, 
+then the graph is a called a **polytree**,
+
+Such a graph will have more than one node with the property of having no parents, and furthermore, the corresponding moralized undirected graph will have loops.
+
+### 8.4.3 Factor graphs
+sum-product algorithm 适用于undirected and directed trees and to polytrees
+我们也可以把它们统一成一种结构：factor graph
+
+有向图和无向图都可以把所有变量的总joint分解为function of subset的乘积。
+Factor graphs make this decomposition explicit **by introducing additional nodes for the factors themselves** in addition to the nodes representing the variables.
+
+![](Pasted%20image%2020210426170222.png)
+
+这部分我们用$\mathrm{x_s}$表示变量的子集，用$x_i$表示单一变量（和以前不同，以前$x_i$也可以表示变量的集合）
+
+对于有向图，$f_s(\mathrm{x_s})$ are local conditional distributions. 
+对于无向图，$f_s(\mathrm{x_s})$ are potential functions over the maximal cliques (the normalizing coefficient 1/Z can be viewed as a factor defined over the empty set of variables)
+
+
+具体画法：
+* there is a node (depicted as usual by a circle) for every variable in the distribution, as was the case for directed and undirected graphs. 
+* There are also additional nodes (depicted by small squares) for each factor fs(xs) in the joint distribution. 
+* Finally, there are undirected links connecting each factor node to all of the variables nodes on which that factor depends.
+
+比如下面的分布可以画成这样：
+![](Pasted%20image%2020210426190641.png)
+![](Pasted%20image%2020210426190656.png)
+
+在上面这个例子中，$f_1$和$f_2$其实可以合并成potential，$f_3$和$f_4$也可以。但是在factor graph中keeps such factors explicit and so is able to convey more detailed information about the underlying factorization.
+
+Factor graphs are said to be **bipartite**(二分图) because they consist of two distinct kinds of nodes, and **all links go between nodes of opposite type. **
+
+对于无向图，我们对每个maximum clique建立一个factor node，并把f就设为clique potentials。同一个图可能有不同的factor graph：
+![](Pasted%20image%2020210426193410.png)
+
+对于有向图，create factor nodes corresponding to the conditional distributions, and then finally add the appropriate links.同一个图可能有不同的factor graph
+![](Pasted%20image%2020210426194452.png)
+
+如果我们对directed tree或undirected tree 做moralize，结果仍然是tree(in other words, the factor graph will have no loops, and there will be one and only one path connecting any two nodes)
+
+需要注意的是，对于**directed polytree**，我们在转化为undirected graph时，是有loop的。但是在moralization中, conversion to a factor graph **again results in a tree**. 
+![](Pasted%20image%2020210426204607.png)
+In fact, local cycles in a directed graph due to links connecting parents of a node can be removed on conversion to a factor graph by defining the appropriate factor function. 此外，有向图中"head to head"产生的local cycles，如果选择合适的factor function，就能在factor graph中去掉：
+![](Pasted%20image%2020210426204707.png)
+
+
+### 8.4.4 The sum-product algorithm
+**"evaluating local marginals over nodes or subsets of nodes"**
+
+在本章中，我们假设变量都是离散的，这样我们就可以用sum来做marginalize。但事实上sum-product algorithm对于linear-Gaussian models也适用
+
+在directed graph中还有一个用于exact inference的算法，belief propagation，可以看作sum-product algorithm的一个special case。
+Here we shall consider only the sum-product algorithm because it is simpler to derive and to apply, as well as being more general.
+
+我们假设原本的graph是an undirected tree or a directed tree or
+polytree，**so that the corresponding factor graph has a tree structure**
+
+Our goal：
+1. to obtain an efficient, exact inference algorithm for finding marginals
+2. in situations where several marginals are required to allow computations to be shared efficiently
+
+#### finding the marginal p(x) for particular variable node x
+
+目前，我们假设所有变量都是hidden的。
+
+By definition, the marginal is obtained by summing the joint distribution over all variables except x so that
+![](Pasted%20image%2020210426211321.png)
+
+Idea:
+to substitute for p(x) using the factor graph expression (8.59) 
+![](Pasted%20image%2020210426211422.png)
+and then interchange summations and products in order to obtain an efficient algorithm
+
+回想到bipartite的性质，与x相连的一定是f节点
+再回想到tree的性质，任意两个节点之间只有一个path
+
+因此把与x相连的节点从x与f的连接处断开，分成若干个group，各个group并不相连
+![](Pasted%20image%2020210426223719.png)
+
+回想factor graph的定义，joint可以写成product of functions of subset
+![](Pasted%20image%2020210426224015.png)
+
+![](Pasted%20image%2020210426224126.png)
+
+ne(x) denotes the set of factor nodes that are neighbours of x, and Xs denotes the set of all variables in the subtree connected to the variable node x via the factor node fs, and Fs(x,Xs) represents the product of all the factors in the group associated with factor fs.
+
+各个group并不相连，因此可以写成各个group的乘积
+
+代入到p(x)的表达式中，利用乘法分配律交换乘法与加法
+![](Pasted%20image%2020210426225256.png)
+functions of each group 的乘积，对于所有其他变量求sum
+->
+对于每个function of each group，对于所有其他变量求sum，然后再乘起来
+(而在因为group彼此不相连，在$group_i$上，对于所有变量sum等于对$group_i$内部的变量sum，也就是$X_s$，所以上图中的summation可以写成$X_s$)
+
+将group内部的summation定义为**messages** from the factor nodes $f_s$ to the variable node x
+![](Pasted%20image%2020210426230211.png)
+We see that the required marginal p(x) is given by the product of all the incoming messages arriving at node x.
+marginal p(x)就是所有传到node x的message的乘积
+
+$F_s(x,X_s)$ is described by a factor (sub-)graph and so **can itself be factorized**. In particular, we can write
+![](Pasted%20image%2020210426231032.png)
+where, for convenience, we have denoted the variables associated with factor $f_s$,in addition to x,by $x_1,...,x_M$，同时也可以写成$\mathrm{x}_s$
+（因为$F_s(x,X_s)$也是一个factor (sub-)graph，因此也可以写成product of functions of subset的形式，上面的式子只是一种比较有用的形式）
+
+![](Pasted%20image%2020210426230951.png)
+
+![](Pasted%20image%2020210426232008.png)
+
+观察到上面的这个
+![](Pasted%20image%2020210426232429.png)
+又是一个summation on group，因此还是可以写成message的形式，只不过这次由(图8.47)可以看出，message是由x node流向f node的。
+![](Pasted%20image%2020210426232909.png)
+还是由于tree的性质，(图8.47)中的每个group仍然是互不相连的
+
+然后再对$G_m(x_m,X_{sm})$分解，
+![](Pasted%20image%2020210426233641.png)
+where the product is taken over all neighbours of node xm except for node $f_s$
+![](Pasted%20image%2020210426233519.png)
+
+同时我们观察到，$F_l(x_m,X_{ml})$和最初求p(x)的因子是一样的
+Note that each of the factors $F_l(x_m,X_{ml})$ represents a subtree of the original graph of precisely the same kind as introduced in (8.62).
+![](Pasted%20image%2020210426233959.png)
+
+
+Substituting (8.68) into (8.67), we then obtain
+![](Pasted%20image%2020210426234210.png)
+where we have used the definition (8.64) of the messages passed from factor nodes to variable nodes.
+
+**Thus to evaluate the message sent by a variable node to an adjacent factor node along the connecting link, we simply take the product of the incoming messages along all of the other links.**
+
+Note:
+* any variable node that has only two neighbours performs no computation but simply passes messages through unchanged
+* a variable node can send a message to a factor node once it has received incoming messages from all other neighbouring factor nodes
+
+
+Each of these messages can be computed recursively in terms of other messages. In order to start this recursion, we can view the node x as the root of the tree and begin at the leaf nodes.
+
