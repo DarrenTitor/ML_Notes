@@ -513,7 +513,7 @@ where, for convenience, we have denoted the variables associated with factor $f_
 ![](Pasted%20image%2020210426230951.png)
 
 ![](Pasted%20image%2020210426232008.png)
-
+注意这里的$f_s(...)$就是各个f节点所对应的函数
 观察到上面的这个
 ![](Pasted%20image%2020210426232429.png)
 又是一个summation on group，因此还是可以写成message的形式，只不过这次由(图8.47)可以看出，message是由x node流向f node的。
@@ -543,3 +543,206 @@ Note:
 
 Each of these messages can be computed recursively in terms of other messages. In order to start this recursion, we can view the node x as the root of the tree and begin at the leaf nodes.
 
+现在就来考虑leaf nodes的计算，
+* if a leaf node is a variable node, then the message that it sends along its one and only link is given by
+	![](Pasted%20image%2020210427000131.png)
+	因为此时F代表在一个empty的group上面summation，结果为1
+	![](Pasted%20image%2020210427000218.png)
+* if the leaf node is a factor node, we see from (8.66) that the message sent should take the form
+	![](Pasted%20image%2020210427000320.png)
+	因为此时G也是在一个empty的group上面summation，结果为1，而前边对各种x进行summation之后，就变成了f(x)
+	![](Pasted%20image%2020210427000334.png)
+	
+	
+![](Pasted%20image%2020210427000511.png)
+
+总结：
+1. viewing the variable node x as the root of the factor graph and initiating messages at the leaves of the graph using (8.70) and (8.71)
+	![](Pasted%20image%2020210427105642.png)
+	![](Pasted%20image%2020210427105652.png)
+1. The message passing steps (8.66) and (8.69) are then applied recursively until messages have been propagated along every link, and the root node has received messages from all of its neighbours
+	![](Pasted%20image%2020210427105714.png)
+	![](Pasted%20image%2020210427105804.png)
+1. Once the root node has received messages from all of its neighbours, the required marginal can be evaluated using (8.63).
+	![](Pasted%20image%2020210427105830.png)
+
+
+#### find the marginals for every variable node
+
+We can obtain a much more efficient procedure by ‘overlaying’ these multiple message passing algorithms to obtain the general sum-product algorithm as follows
+
+1. 任意选定一个node作为root
+2. 从leaf把message传到root
+3. root可以从所有的邻居那里收到message，也就能把信息再发给每个邻居
+
+By now, a message will have passed in both directions across every link in the graph
+
+#### find the marginal distributions $p(\mathrm{x_s})$ associated with the sets of variables belonging to each of the factors
+
+it is easy to see that the marginal associated with a factor is given by the **product of messages arriving at the factor node and the local factor at that node**
+![](Pasted%20image%2020210427111735.png)
+in complete analogy with the marginals at the variable nodes
+
+回想(8.66)，这两者都是要求$f_s$节点所代表的"message".只不过(8.66)严格意义上的message需要对$\mathrm{x_s}$summation，而我们想求$p(\mathrm{x_s})$，当然就不用求和了
+![](Pasted%20image%2020210427112019.png)
+
+If the factors are parameterized functions and we wish to learn the values of the parameters using the EM algorithm, then these marginals are precisely the quantities we will need to calculate in the E step, as we shall see in detail when we discuss the hidden Markov model in Chapter 13.
+
+#### a different view
+因为从variable node指向factor node，就只是单纯的相乘
+因此可以忽视掉所有的variable node，将max-product只看作是一个factor node之间传递message的过程
+The sum-product algorithm can be viewed purely in terms of messages sent out by factor nodes to other factor nodes.
+
+![](Pasted%20image%2020210427113248.png)
+
+#### normalization
+如果factor graph由有向图转换而来，the joint distribution is already correctly normalized
+如果factor graph由无向图转换而来，in general there will be an unknown normalization coefficient 1/Z. 
+
+As with the simple chain example of Figure 8.38, this is easily handled by working with an unnormalized version $\widetilde{p}(x)$ of the joint distribution,
+where $p(x) = \widetilde{p}(x)/Z$
+![](Pasted%20image%2020210427113900.png)
+We first run the sum-product algorithm to find the corresponding **unnormalized marginals $p(x_i)$**. The coefficient $1/Z$ is then easily obtained by normalizing any one of these marginals, and this is computationally efficient because the normalization is done over a single variable rather than over the entire set of variables as would be required to normalize $p(x)$ directly.
+也就是，对于无向图，在marginalize之前的所有计算中，joint都可以不用normalize。等到最终求出margin之后，对于这一个变量求和得出Z就可以了
+
+#### example
+![](Pasted%20image%2020210427130347.png)
+这里这个graph并不一定是从有向图还是无向图得来，因此不一定normalize
+这个graph的**unnormalized** joint distribution为：
+![](Pasted%20image%2020210427130700.png)
+
+![](Pasted%20image%2020210427131001.png)
+![](Pasted%20image%2020210427131217.png)
+![](Pasted%20image%2020210427131229.png)
+
+此时，每个link上面两个方向的message就都算出来了
+最后，根据
+![](Pasted%20image%2020210427131539.png)
+求出$x_2$的unnormalized margin：
+![](Pasted%20image%2020210427131609.png)
+在此之上对$x_2$求和，就能求出normalization term Z
+
+#### observed variable
+
+
+In most practical applications, a subset of the variables will be observed, and we wish to calculate posterior distributions conditioned on these observations.
+(Mark，这段没看懂)
+![](Pasted%20image%2020210427202425.png)
+
+
+### 8.4.5 The max-sum algorithm
+sum-product algorithm用于take a joint distribution $p(\mathrm{x})$ expressed as a factor graph and efficiently find marginals over the component variables
+一般我们还有两个常见的任务：
+* find a setting of the variables that has the largest probability
+* find the value of that probability
+
+这两个工作可以用**max-sum**, which can be viewed as an application of **dynamic programming** in the context of graphical models
+
+最简单的思路就是，对每个变量x都跑一遍max-product，然后在各自的marginal上边找到最大值 $x_i^*$. 但是this would give the set of values that are **individually** the most probable.
+
+In practice, we typically wish to find the **set of values** that **jointly** have the largest probability, in other words the vector $x_{max}$ that maximizes the joint distribution, so that
+![](Pasted%20image%2020210427205442.png)
+
+也就是我们要找**一组值**，让joint $p(\mathrm{x})$达到 max，而不是在每一维度找一个max然后拼起来
+
+
+#### find the maximum of the joint distribution (by propagating messages from the leaves to an arbitrarily chosen root node)
+假设一共有M个变量，可以把max写成展开的形式：
+![](Pasted%20image%2020210427205941.png)
+
+and then substitute for $p(\mathrm{x})$ using its expansion in terms of a product of factors。然后可以对$p(\mathrm{x})$进行分解
+
+在max-product中，我们利用乘法分配律交换了乘法与求和
+而在这里max-sum中，我们利用max的性质交换乘法与max
+![](Pasted%20image%2020210427210433.png)
+
+先考虑chain上的情况，因为是factor graph，可以拆分
+![](Pasted%20image%2020210427211548.png)
+![](Pasted%20image%2020210427211852.png)
+
+我们可以看到交换之后的式子is easily interpreted in terms of messages passed from node xN backwards along the chain to node x1. （在引入factor graph之前的那部分讨论过，chain的message就是potential）
+
+下面从chain推广到tree，把
+![](Pasted%20image%2020210427223345.png)
+代入到max的性质中
+The structure of this calculation is identical to that of the sum-product algorithm, and so we can simply translate those results into the present context.
+
+In particular, suppose that we designate a particular variable node as the ‘root’ of the graph. 
+Then we start a set of messages propagating inwards from the leaves of the tree towards the root, with each node sending its message towards the root once it has received all incoming messages from its other neighbours. 
+The final maximization is performed over the product of all messages arriving at the root node, and gives the **maximum** value for $p(\mathrm{x})$
+![](Pasted%20image%2020210427224107.png)
+观察sum-product得到的式子，这个式子是由乘法分配律得到的。max-product的推导在下面。
+This could be called the max-product algorithm and is identical to the sum-product algorithm except that **summations are replaced by maximizations**.
+
+***
+Q：那这样岂不是应该把上面的式子的求和换成max么，不应该是max-product么，为什么是max-sum？
+通常对p(x)求ln，防止underflow。In practice, products of many small probabilities can lead to numerical underflow problems, and so it is convenient to work with the logarithm of the joint distribution.
+因为lnx单调，所以max和ln可以交换
+![](Pasted%20image%2020210427225220.png)
+此时max的性质还在，只不过从乘法变成加法
+![](Pasted%20image%2020210427225331.png)
+
+**Thus taking the logarithm simply has the effect of replacing the products in the max-product algorithm with sums, and so we obtain the max-sum algorithm**
+
+类比sum-product的结论，我们可以直接写出max-sum的式子：
+![](Pasted%20image%2020210427231754.png)
+![](Pasted%20image%2020210427231839.png)
+while at the root node the maximum probability can then be computed, by analogy with (8.63), using
+![](Pasted%20image%2020210427232538.png)
+
+由此就得到了joint的max
+
+#### finding the configuration of the variables for which the joint distribution attains this maximum value
+我们想要得到与上面的$p^{max}$对应的$x^{max}$
+![](Pasted%20image%2020210427233031.png)
+At this point, we might be tempted simply to continue with the message passing algorithm and send messages from the root back out to the leaves, using (8.93) and (8.94), then apply (8.98) to all of the remaining variable nodes. However, because we are now maximizing rather than summing, it is possible that there may be multiple configurations of x all of which give rise to the maximum value for p(x).In such cases, this strategy can fail because **it is possible for the individual variable values obtained by maximizing the product of messages at each node to belong to different maximizing configurations, giving an overall configuration that no longer corresponds to a maximum**.
+
+The problem can be resolved by adopting a rather different kind of message passing from the root node to the leaves
+
+let us return once again to the simple chain example of N variables x1,...,xN each having K states
+Suppose we take node xN to be the root node. Then in the first phase, we propagate messages from the leaf node x1 to the root node using
+![](Pasted%20image%2020210427234256.png)
+![](Pasted%20image%2020210427234305.png)
+然后就能得到The most probable value for xN
+![](Pasted%20image%2020210427234338.png)
+
+现在我们想得到the states of the previous variables that **correspond to the same maximizing configuration**.
+
+This can be done by **keeping track of which values of the variables gave rise to the maximum state of each variable**, in other words by storing quantities given by
+![](Pasted%20image%2020210427234628.png)
+
+
+下面来解释一下这个式子：
+![](Pasted%20image%2020210428000602.png)
+Note that this is not a probabilistic graphical model because the nodes represent individual states of variables
+For each state of a given variable, there is a unique state of the previous variable that maximizes the probability 
+Once we know the most probable value of the final node xN, we can then simply follow the link back to find the most probable state of node xN−1 and so on back to the initial node x1
+
+This corresponds to propagating a message back down the chain using
+![](Pasted%20image%2020210428001101.png)
+and is known as **back-tracking**.
+
+
+如果我们正向max-sum之后，反向传播，然后对每个变量套用这个式子：
+![](Pasted%20image%2020210428002742.png)
+最后选出的组合可能分布在(图8.53)的几条不同的路径中，最终就导致不是global maximum
+
+extension to a general tree-structured factor graph：
+换句话说，在正向message传播的时候，我们需要算这个东西，
+![](Pasted%20image%2020210428011457.png)
+在对M个变量逐个max的时候，我们记下每个变量满足这个式子的值
+![](Pasted%20image%2020210428011627.png)
+然后我们在正向传播结束之后通过这个式子得到了$p^{max}$
+![](Pasted%20image%2020210428012205.png)
+此时我们存下来的那些值就自动对应$p^{max}_1,...,p^{max}_M$
+
+
+An important application of this technique is for finding the most probable sequence of hidden states in a hidden Markov model, in which case it is known as the Viterbi algorithm
+
+#### observation
+The observed variables are clamped to their observed values, and the maximization is performed over the remaining hidden variables. This can be shown formally by including identity functions for the observed variables into the factor functions, as we did for the sum-product algorithm.
+
+### 8.4.6 Exact inference in general graphs
+
+
+### 8.4.7 Loopy belief propagation
