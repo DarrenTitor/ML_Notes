@@ -743,6 +743,41 @@ An important application of this technique is for finding the most probable sequ
 The observed variables are clamped to their observed values, and the maximization is performed over the remaining hidden variables. This can be shown formally by including identity functions for the observed variables into the factor functions, as we did for the sum-product algorithm.
 
 ### 8.4.6 Exact inference in general graphs
+sum-product和max-sum适用于tree，然而实践中we have to deal with graphs having loops
+将tree上面的inference推广到任意拓扑结构的算法称为junction tree algorithm
+大概步骤：
+1. 把有向图转化为无向图，无向图不用变
+2. Next the graph is *triangulated*, which involves finding chord-less cycles containing four or more nodes and adding extra links to eliminate such chord-less cycles
+	![](Pasted%20image%2020210428133838.png)
+	在上面这个图中，A-D-B-C-A为chordless cycle，此时要在AB或CD任意加一条边
+	注意potential还是原来的函数，只不过是按新的结构进行分解
+3. 用这个triangulated undirected graph建立a new tree-structured undirected graph called a join tree
+	join tree中的每个节点代表无向图中的一个maximal clique，有公共变量的maximal clique之间有link
+	* 这个连接各个clique形成树的过程，要满足一定的条件，使得最后形成的树是maximal spanning tree
+	* 其中link的weight为两个clique共有变量的个数，tree的weight是树上所有link的weight之和
+	* If the tree is condensed, so that any clique that is a subset of another clique is absorbed into the larger clique, this gives a **junction tree**. 
+	* **As a consequence of the triangulation step**, the resulting tree satisfies the **running intersection property**, which means that if a variable is contained in two cliques, then it must also be contained in every clique on the path that connects them.
+4. a two-stage message passing algorithm, essentially equivalent to the sum-product algorithm, can now be applied to this junction tree in order to find marginals and conditionals
+
+虽然前面很复杂，但这个算法的核心仍然是交换乘法和加法，使得我们可以先summation出局部的message，再把message传递相乘。而不是直接对joint 进行summation。
+at its heart is the simple idea that we have used already of exploiting the factorization properties of the distribution to **allow sums and products to be interchanged so that partial summations can be performed, thereby avoiding having to work directly with the joint distribution**
+
+局限性：
+Unfortunately, the algorithm must work with the joint distributions **within each node** (each of which corresponds to a clique of the triangulated graph) and so the computational cost of the algorithm is determined by the number of variables in the largest clique，并且会指数增长
 
 
 ### 8.4.7 Loopy belief propagation
+
+在approximate inference中，需要用到chapter10中的variational methods和chapter11的Monte Carlo methods。
+这里先简单介绍一种用于graph with loops 的approximate方法
+思想：
+The idea is simply to apply the sum-product algorithm even though there is no guarantee that it will yield good results.
+因为graph现在有cycles了，information can flow many times around the graph. For some models, the algorithm will converge, whereas for others it will not.
+(Mark，这里跳了一段)
+### 8.4.8 Learning the graph structure
+之前我们都是假设graph是已知的，
+理论上我们可以为graph的结构设一个prior，然后利用posterior来进行预测：
+![](Pasted%20image%2020210428144111.png)
+也就是make predictions by averaging with respect to this distribution
+然而这样计算量太大，一般都会采用heuristics来筛选graph的结构
+
