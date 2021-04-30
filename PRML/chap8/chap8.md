@@ -383,8 +383,16 @@ Note that each of the messages comprises a set of K values, one for each choice 
 
 如果想得到chain上每个变量的marginal，就可以先从$x_N$开始求出所有的$µ_\beta(x_i)$，从从$x_1$开始求出所有的$µ_\alpha(x_i)$。把所有的结果存起来，然后再算marginal。
 
+***
+#### Note: observation
 如果有某些变量被观测：If some of the nodes in the graph are observed, then **the corresponding variables are simply clamped to their observed values and there is no summation**.
+注意这个指示函数$I$是和summation同时出现的，举个例子：我们要算$\sum_{x_1}\sum_{x2}f(x_1,x_2)$，然后我们观测了$x_2$为$\hat{x_2}$
+直接代入的话为$\sum_{x_1}f(x_1,\hat{x_2})$,
+如果写成summation+I的话，就是$\sum_{x_1}\sum_{x2}f(x_1,x_2)\cdot I(x_2,\hat{x_2})$,
+此时把summation$\sum_{x2}$展开，此时只有$x_2=\hat{x_2}$的项目会乘1，其他项会乘0.然后再把每一项相加，最后得到的结果就是$\sum_{x_1}f(x_1,\hat{x_2})$，和直接代入的结果相同
 
+![](Pasted%20image%2020210430165125.png)
+***
 相邻两个变量的joint distribution：$p(x_{n-1}, x_n)$
 This is similar to the evaluation of the marginal for a single node, except that there are now two variables that are not summed out.
 ![](Pasted%20image%2020210426163108.png)
@@ -626,8 +634,10 @@ We first run the sum-product algorithm to find the corresponding **unnormalized 
 
 
 In most practical applications, a subset of the variables will be observed, and we wish to calculate posterior distributions conditioned on these observations.
-(Mark，这段没看懂)
+
+这段要类比于8.4.1中对于chain的observe看，
 ![](Pasted%20image%2020210427202425.png)
+注意此时得出的结果是unnormalized的
 
 
 ### 8.4.5 The max-sum algorithm

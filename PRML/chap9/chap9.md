@@ -95,3 +95,55 @@ As we shall see later, γ(zk) can also be viewed as the **responsibility** that 
 ![](Pasted%20image%2020210428225623.png)
 根据prior $\pi_k$可以得到图a，根据posterior $\gamma(z_k)$可以得到图c
 
+### 9.2.1 Maximum likelihood
+Suppose we have a data set of observations {x1,..., xN}, and we wish to model this data using a mixture of Gaussians
+对应的latent variable可以写成一个NxK的矩阵Z
+![](Pasted%20image%2020210429103842.png)
+假设i.i.d，则可以写出log likelihood：
+![](Pasted%20image%2020210429103717.png)
+***
+下面来探讨对mixture gaussian进行MLE所存在的问题：
+For simplicity, consider a Gaussian mixture whose components have covariance matrices given by $\Sigma_k = \sigma^2_k\textbf{I}$
+
+Suppose that one of the components of the mixture model, let us say the jth component, has its mean µj exactly equal to one of the data points so that µj = xn for some value of n. This data point will then contribute a term in the likelihood function of the form
+
+![](Pasted%20image%2020210429104756.png)
+$\sigma_j\to0$时，这一点对likelihood的贡献趋于无穷，likelihood趋于无穷
+
+因此MLE不适用于Mixture Gaussian，因为such singularities will always be present and will occur whenever one of the Gaussian components ‘collapses’ onto a specific data point.
+
+Recall that this problem did not arise in the case of a single Gaussian distribution. To understand the difference, note that if a single Gaussian collapses onto a data point it will contribute multiplicative factors to the likelihood function arising from the other data points and these factors will go to zero exponentially fast, giving an overall likelihood that goes to zero rather than infinity. 
+However, once we have (at least) two components in the mixture, one of the components can have a finite variance and therefore assign finite probability to all of the data points while the other component can shrink onto one specific data point and thereby contribute an ever increasing additive value to the log likelihood
+
+
+还有一个问题就是identifiability。for any given (nondegenerate) point in the space of parameter values there will be a further K!−1 additional points all of which give rise to exactly the same distribution.
+
+Mixture gaussian比单个gaussian更难计算的原因，其实就是(9.14)的log likelihood中，ln内有求和，这个是不能做简化的。因此求导之后不能直接得到解
+
+### 9.2.2 EM for Gaussian mixtures
+
+An elegant and powerful method for finding maximum likelihood solutions for models with latent variables is called the **expectation-maximization algorithm**, or EM algorithm 
+
+将log likelihood对$\mu_k$求导
+![](Pasted%20image%2020210430111653.png)
+![](Pasted%20image%2020210430111833.png)
+![](Pasted%20image%2020210430114303.png)
+可以看到右边的其中一项就是$\gamma(z_k)$，也就是$p(z_k=1|x)$这个后验
+
+multiplying by $\Sigma_k$(which we assume to be nonsingular)可以得到
+![](Pasted%20image%2020210430112329.png)
+We can interpret $N_k$ as the effective number of points assigned to cluster k.
+
+可以看到，$\mu_k$是第k个gaussian的data的weighted sum，weight则是posterior probability γ(znk) that component k was responsible for generating xn
+
+接下来用相同的思路对$Sigma_k$求导，making use of the result for the maximum likelihood solution for the covariance matrix of a single Gaussian, we obtain
+![](Pasted%20image%2020210430115412.png)
+![](Pasted%20image%2020210430115112.png)
+again with each data point weighted by the corresponding posterior probability and with the denominator given by the effective number of points associated with the corresponding component.
+
+最后我们要对$\pi_k$做MLE，要用到Lagrange，因为对于$\pi_k$是有约束的：
+![](Pasted%20image%2020210430115707.png)
+
+![](Pasted%20image%2020210430115757.png)
+
+因此第k个gaussian的系数就是the average responsibility which that component takes for explaining the data points
