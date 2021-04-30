@@ -116,7 +116,8 @@ Recall that this problem did not arise in the case of a single Gaussian distribu
 However, once we have (at least) two components in the mixture, one of the components can have a finite variance and therefore assign finite probability to all of the data points while the other component can shrink onto one specific data point and thereby contribute an ever increasing additive value to the log likelihood
 
 
-还有一个问题就是identifiability。for any given (nondegenerate) point in the space of parameter values there will be a further K!−1 additional points all of which give rise to exactly the same distribution.
+还有一个问题就是**identifiability**。for any given (nondegenerate) point in the space of parameter values there will be a further K!−1 additional points all of which give rise to exactly the same distribution.
+简单来说，就是K组参数和K个component，K个萝卜K个坑，顺序无所谓结果，但是却对应着K！个solution
 
 Mixture gaussian比单个gaussian更难计算的原因，其实就是(9.14)的log likelihood中，ln内有求和，这个是不能做简化的。因此求导之后不能直接得到解
 
