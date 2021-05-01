@@ -129,7 +129,7 @@ An elegant and powerful method for finding maximum likelihood solutions for mode
 ![](Pasted%20image%2020210430111653.png)
 ![](Pasted%20image%2020210430111833.png)
 ![](Pasted%20image%2020210430114303.png)
-可以看到右边的其中一项就是$\gamma(z_k)$，也就是$p(z_k=1|x)$这个后验
+可以看到右边的其中一项就是$\gamma(z_{nk})$，也就是$p(z_k=1|x)$这个后验
 
 multiplying by $\Sigma_k$(which we assume to be nonsingular)可以得到
 ![](Pasted%20image%2020210430112329.png)
@@ -148,3 +148,97 @@ again with each data point weighted by the corresponding posterior probability a
 ![](Pasted%20image%2020210430115757.png)
 
 因此第k个gaussian的系数就是the average responsibility which that component takes for explaining the data points
+
+需要强调的是，上面的三个式子并不是model的一个closed-form solution，
+但是我们可以用iterative scheme来求解，
+1. 首先选定means, covariances, and mixing coefficients的初始值
+2. alternate between the following two updates that we shall call the E step and the M step
+	1. In the expectation step, or E step, we use the current values for the parameters to evaluate the **posterior probabilities, or responsibilities**, given by (9.13)
+	![](Pasted%20image%2020210501095057.png)
+	2. We then use these probabilities in the maximization step, or M step, to re-estimate the **means, covariances, and mixing coefficients** using the results (9.17), (9.19), and (9.22)
+
+注意在M step中我们先求$\mu$，再用这个$\mu$求$\Sigma$
+
+EM的iteration数与每个循环中的计算量都远大于KMeans，因此常常先用Kmeans找初始值，再用gaussian mixture进一步求：The covariance matrices can conveniently be initialized to the sample covariances of the clusters found by the K-means algorithm, and the mixing coefficients can be set to the fractions of data points assigned to the respective clusters. 
+强调：log likelihood function有多个local maxima, EM并不保证找到global maxima
+
+## 9.3. An Alternative View of EM
+**The goal of the EM algorithm is to find maximum likelihood solutions for models having latent variables**
+
+We denote the set of all observed data by $\textbf{X}$, in which the $n^{th}$ row represents $\textbf{x}^T_n$, and similarly we denote the set of all latent variables by $\textbf{Z}$, with a corresponding row $\textbf{z}^T_n$. The set of all model parameters is denoted by $\theta$, and
+so the log likelihood function is given by
+![](Pasted%20image%2020210501103630.png)
+对于continuous latent variables，只需要把求和换成积分
+
+注意到summation出现在ln内，Even if the joint distribution p(X, Z|θ) belongs to the exponential family, the marginal distribution p(X|θ) typically does not as a result of this summation. 求和使得ln不能直接作用于joint，导致MLE的解很复杂
+
+假设对于每个observation in X，我们都知道对应的Z，We shall call {X, Z} the **complete** data set, and we shall refer to the actual observed data X as **incomplete**。
+![](Pasted%20image%2020210501104541.png)
+（a是complete的，b是incomplete的）
+我们可知，对于complete data set的log likelihood就是简单的ln p(X,Z|θ), **我们假设这个log likelihood的maximization是好求的**。
+
+然而在实践中，我们没有complete data set，只有incomplete data set X
+Our state of knowledge of the values of the latent variables in Z is given only by the posterior distribution p(Z|X, θ)
+
+**Because we cannot use the complete-data log likelihood, we consider instead its expected value under the posterior distribution of the latent variable, which corresponds (as we shall see) to the E step of the EM algorithm.** 
+上面这句很关键，我们是在表示complete-data log likelihood的期望，其中概率是posterior p(Z|X, θ)，value是 ln p(X, Z|θ)。也就是用incomplete的X的log likelihood在p(Z|X, θ)上的概率求期望。这个期望不是X的期望，而是人为定义的一个值，是对complete-data log likelihood的近似。而这计算这个期望的步骤对应E-step，而求出使这个期望最大的参数的过程对应M-step。
+如果当前参数对应$\theta^{old}$，那么先后经历了一个Estep和Mstep之后，我们就得到了一个新的$\theta^{new}$
+
+The use of the expectation may seem somewhat arbitrary. However, we shall see the motivation for this choice when we give a deeper treatment of EM in Section 9.4.
+
+总结：
+* In the E step, we use the current parameter values $\theta^{old}$ to find the posterior distribution of the latent variables given by $p(Z|X, \theta^{old})$.
+	We then use this posterior distribution to find the expectation of the complete-data log likelihood evaluated for some general parameter value $\theta$. This expectation, denoted $\mathcal{Q} (\theta,\theta^{old})$, isgiven by
+	![](Pasted%20image%2020210501122529.png)
+* In the M step, we determine the revised parameter estimate $\theta^{new}$ by maximizing this function
+	![](Pasted%20image%2020210501122813.png)
+	
+Note:
+注意现在在$\mathcal{Q} (\theta,\theta^{old})$ 中，ln直接作用在joint上，ln中没有summation了，因此可以计算了
+
+![](Pasted%20image%2020210501123432.png)
+![](Pasted%20image%2020210501123447.png)
+
+The EM algorithm can also be used to find MAP (maximum posterior) solutions for models in which a prior p(θ) is defined over the parameters. 
+In this case the E step remains the same as in the maximum likelihood case, whereas in the M step the quantity to be maximized is given by $\mathcal{Q} (\theta,\theta^{old}) + ln p(\theta)$.
+
+
+### 9.3.1 Gaussian mixtures revisited
+EM的motivation：(incomplete不知道Z导致了ln(summation), 没法算. 而下面来展示如果是complete的话，就很好算)
+现在假设我们不光知道X，还知道Z，也就是知道是哪个component产生了X。（注意这个Z是hard的onehot，与posterior的$\gamma(z_{nk})$区分开）
+![](Pasted%20image%2020210501222803.png)
+此时likelihood为：
+![](Pasted%20image%2020210501222912.png)
+此时可以看到，ln内部没有summation，而ln里的gaussian本身就是exponential family中的，因此很好算
+
+（下面从隐变量的角度把GMM再推一下）
+然而实际中并没有隐变量的值，因此我们把数据X在Z的后验上的期望看作是complete-data log likelihood
+
+![](Pasted%20image%2020210501224610.png)
+![](Pasted%20image%2020210501224619.png)
+再加上bayes定理可以得到
+![](Pasted%20image%2020210501224659.png)
+![](Pasted%20image%2020210501224726.png)
+
+与之前的硬算p(X)
+![](Pasted%20image%2020210501224830.png)
+相比，可以看到ln与求和交换了位置，因此好算
+
+* the maximization with respect to the means and covariances:
+	因为$z_{nk}$是onehot，因此(9.36)只是K个independent的gaussian相加，因此结果就是K个gaussian各自算各自的参数
+* the maximization with respect to the mixing coefficients：
+	因为有sum为1的约束，因此还是要用lagrange，得到
+	![](Pasted%20image%2020210501231105.png)
+	因此mixing coefficients are equal to the fractions of data points assigned to the corresponding components
+	
+那么问题来了，$z_{nk}$我们不知道，因此和前面一样，我们用bayes：（其实式子也和前面(9.35)是一个道理，因为posterior正比于joint）
+![](Pasted%20image%2020210501232121.png)
+观察这个式子我们可以发现。N个$z_n$是independent的，因此我们可以
+![](Pasted%20image%2020210501233712.png)
+![](Pasted%20image%2020210501233725.png)
+(Mark，上面这个求期望没咋看懂)
+The expected value of the complete-data log likelihood function is therefore given by
+![](Pasted%20image%2020210501234157.png)
+
+
+### 9.3.2 Relation to K-means
