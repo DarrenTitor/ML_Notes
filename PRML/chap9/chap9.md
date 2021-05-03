@@ -242,3 +242,53 @@ The expected value of the complete-data log likelihood function is therefore giv
 
 
 ### 9.3.2 Relation to K-means
+Kmeans是hard的，GMM是soft的，我们可以把kmeans看作是GMM的一个limit
+
+假设GMM的每个component的gaussian，covariance  matrix都是$\epsilon I$, where $\epsilon$ is a variance parameter that is shared by all of the components
+![](Pasted%20image%2020210501235619.png)
+我们假设，$\epsilon$不需要在EM中求解，然后我们代入EM-GMM的结论：
+可以得到当$\epsilon \to 0$时，em的解就是kmeans的解
+
+
+## 9.4. The EM Algorithm in General
+(proof that the EM algorithm indeed maximize the likelihood function)
+
+我们的目标是maximize
+![](Pasted%20image%2020210502102258.png)
+
+假设p(X|θ)难算，但是complete-data likelihood function p(X, Z|θ)很简单
+我们引入q(Z)作为Z的分布，然后可以看到对于任意的q(Z)，都有
+![](Pasted%20image%2020210502102808.png)
+因为有：
+![](Pasted%20image%2020210502103517.png)
+
+这里的KL散度可以理解为：用p(Z|X,θ)近似q(Z)带来的熵增
+L(q,θ)则是一个q的functional，也是一个θ的function
+
+因为KL(q||p)>=0,所以L(q, θ)<=ln p(X|θ)
+也就是说**L(q, θ)是ln p(X|θ)的lower bound**
+![](Pasted%20image%2020210502105420.png)
+在E-step中，我们固定住$\theta^{old}$，关于q(Z)maxmize L(q, θ).因为p(X|θ)和q(Z)没关系，所以L(q, θ)能一直取到上限，也就是KL散度为0，q(Z)=p(Z|X,θ)的情况。**In this case, the lower bound will equal the log likelihood**
+![](Pasted%20image%2020210502105611.png)
+
+在M-step中，我们固定住q(Z)，关于θ对L(q, θ)最大化，从而得到$\theta^{new}$
+此时lower bound L会变大，也就导致整个log likelihood变大
+注意此时q(Z)不再等于p(Z|X,θ)，因为θ已经更新了，所以KL大于0(这里讨论的都是还没有收敛的情况)。**The increase in the log likelihood function is therefore greater than the increase in the lower bound**
+![](Pasted%20image%2020210502110251.png)
+我们可以把$q(Z)=p(Z|X,\theta^{old})$代入L的定义式，得到
+![](Pasted%20image%2020210502110435.png)
+(因为之前在GMM中我们已经定义过近似的complete log likelihood为)
+![](Pasted%20image%2020210502110718.png)
+再观察，在上面M-step中，θ只出现在ln内部，因此在joint p(X, Z|θ)为exponential family的情况下，计算就会比直接算p(X|θ)简单
+
+***
+用EM做MAP：p(θ|X)，其中设定prior p(θ)
+和之前一样，我们先把我们的目标转换成joint
+![](Pasted%20image%2020210502112053.png)
+
+然后和之前一样，我们同样把KL散度拆出来，因为我们已知它是非负的：
+![](Pasted%20image%2020210502112221.png)
+where ln p(X) is a constant.
+此时对这个式子进行EM，
+在E-step中，对q优化的式子与之前一样
+在M-step中，对θ优化的过程不变，只是在式子中多了一项lnp(θ)
