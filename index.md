@@ -5,7 +5,14 @@
 就直接从obsidian粘贴到这里，仅作备份
 
 [Chapter 1](./PRML/chap1/chap1)
+
 [Chapter 2](./PRML/chap2/chap2)
+
 [Chapter 3](./PRML/chap3/chap3)
+
 [Chapter 8](./PRML/chap8/chap8)
+
+[Chapter 9](./PRML/chap9/chap9)
+
+[Chapter 10](./PRML/chap10/chap10)
 

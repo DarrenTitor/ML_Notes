@@ -20,7 +20,7 @@ Equivalently, we can use the ‘tanh’ function because this is related to the 
 
 Note that the Gaussian noise assumption implies that the conditional distribution of t given x is **unimodal**, which may be inappropriate for some applications. An extension to mixtures of conditional Gaussian distributions, which permit multimodal conditional distributions, will be discussed in Section 14.5.1.
 
-把上边的式子改写成向量形式：
+把上边的式子改写成向量形式：Likelihood function:
 ![](Pasted%20image%2020210419220550.png)
 Note that in supervised learning problems such as regression (and classification), we are not seeking to model the distribution of the input variables.
 因此X永远在condition这边，因此省略

@@ -146,3 +146,128 @@ Conversely for α>=1 the divergence is zero-avoiding, so that values of x for wh
 α =0时的情况，we obtain a symmetric divergence that is linearly related to the **Hellinger distance** given by
 ![](Pasted%20image%2020210503235725.png)
 
+### 10.1.3 Example: The univariate Gaussian
+
+
+## 10.2. Illustration: Variational Mixture of Gaussians
+
+
+首先根据上一章的讨论，我们可以得到下面这两个式子：
+（这里只不过把N个样本合到了一起）
+![](Pasted%20image%2020210513092752.png)
+![](Pasted%20image%2020210513092802.png)
+注意这里用precision matrices rather than covariance matrices来简化表达
+
+然后我们给$\pi$设一个先验，因为Z的分布是multinomial的，因此我们用dirichlet
+![](Pasted%20image%2020210513095641.png)
+where by symmetry we have **chosen the same parameter α0 for each of the components**, and C(α0) is the normalization constant for the Dirichlet distribution
+![](Pasted%20image%2020210513095812.png)
+As we have seen, the parameter α0 can be interpreted as the effective
+prior number of observations associated with each component of the mixture. 
+If the value of α0 is small, then the posterior distribution will be influenced primarily by the data rather than by the prior.
+
+Similarly, we introduce an independent Gaussian-Wishart prior governing the mean and precision of each Gaussian component, given by
+![](Pasted%20image%2020210513101652.png)
+because this represents the conjugate prior distribution when both the mean and precision are unknown
+![](Pasted%20image%2020210513102257.png)
+这里我们可以看到，latent variable和parameter最大的区别就是latent variable在plate中，个数随着数据增长而增长。而在graph层面，其实与parameter没有根本上的区别。
+
+### 10.2.1 Variational distribution
+总的joint可以写作
+![](Pasted%20image%2020210513103038.png)
+Note that only the variables X are observed.
+
+然后我们现在就来设一个可以factorize的variational distribution
+![](Pasted%20image%2020210513122043.png)
+这里我们factorize between the latent
+variables and the parameters 
+
+It is remarkable that this is the **only** assumption that we need to make in order to obtain a tractable practical solution to our Bayesian mixture model.
+有了这个factorize的假设，q的形式就能自动定下来
+#### q(Z)
+接下来，我们直接套用之前的最优解的结论，可以得到：
+![](Pasted%20image%2020210513123337.png)
+然后我们只保留Z相关的部分，其他的放到const中
+![](Pasted%20image%2020210513123417.png)
+
+代入之前的两个p的定义，得到
+![](Pasted%20image%2020210513123500.png)
+where D is the dimensionality of the data variable x.
+
+同时取对数
+![](Pasted%20image%2020210513123543.png)
+然后再normalize一下，可以得到：
+![](Pasted%20image%2020210513123613.png)
+![](Pasted%20image%2020210513123622.png)
+
+We see that the optimal solution for the factor q(Z) takes the same functional form as the prior p(Z|π).
+然后我们可以得到期望：（类比multinomial的期望）
+![](Pasted%20image%2020210513124850.png)
+这个$r_{nk}$其实就起着responsibility的作用
+
+观察到q*(Z)的最优解中有其他变量的期望，因此我们还是要用iterative的方法求解
+
+#### q(π, µ, Λ)
+下面定义三个statistics，用于简化表达：
+![](Pasted%20image%2020210513125858.png)
+Note that these are analogous to quantities evaluated in the maximum likelihood EM algorithm for the Gaussian mixture model
+
+首先代入最优解：
+![](Pasted%20image%2020210513131040.png)
+（这里观察到右边的项要么只有π，要么只有µ和Λ。体现了q(π, µ, Λ)在这里分解为q(π)q(µ, Λ)）
+而且我们观察到含有µ和Λ的项都有求和，因此我们可以把整个factorization写成：
+![](Pasted%20image%2020210513131351.png)
+
+先求关于π的：
+把与π无关的都丢到const中，可以得到
+![](Pasted%20image%2020210513131718.png)
+Taking the exponential of both sides, we recognize q*(π) as a Dirichlet distribution
+![](Pasted%20image%2020210513131821.png)
+
+再求关于µ和Λ的：
+the variational posterior distribution $q*(µk, Λk)$ does not factorize into the product of the marginals, but we can always use the product rule to write it in the form $q*(µk, Λk)= q*(µk|Λk)q*(Λk)$ .
+
+结果也是一个Gaussian-Wishart distribution：(这里推导就跳了)
+![](Pasted%20image%2020210513134027.png)
+These update equations are analogous to the M-step equations of the EM algorithm for the maximum likelihood solution of the mixture of Gaussians. 
+We see that the computations that **must be performed in order** to update the variational posterior distribution over the model parameters 
+
+然而问题还没解决，
+上面的最优解中需要用到$r_{nk}$, $r_{nk}$是由$\rho _{nk}$normalize得到的，$\rho _{nk}$中又要用到$E[ln\pi_k]$,$E[ln\Lambda_k]$和
+![](Pasted%20image%2020210513213456.png)
+![](Pasted%20image%2020210513212719.png)
+We see that this expression involves expectations with respect to the variational distributions of the parameters, and these are easily evaluated to give
+![](Pasted%20image%2020210513213605.png)
+![](Pasted%20image%2020210513213809.png)
+![](Pasted%20image%2020210513213654.png)
+
+***
+variational EM中，
+![](Pasted%20image%2020210513214006.png)
+MLE EM中，
+![](Pasted%20image%2020210513214023.png)
+可以看到形式是很相近的
+
+***
+总结：
+* In the variational equivalent of the E step,
+	we use the current distributions over the model parameters to evaluate the moments in (10.64), (10.65), and (10.66) and hence evaluate E[znk]= rnk.
+* in the subsequent variational equivalent of the M step，
+	we **keep these responsibilities fixed** and use them to **re-compute** the variational distribution over the parameters using (10.57) and (10.59).
+	
+同时我们可以观察到，我们求得的variational posterior q与我们的假设p的函数形式是一样的（dirichlet、Gaussian-Wishart）。This is a general result and is a consequence of the choice of conjugate distributions.
+
+***
+![](Pasted%20image%2020210513221703.png)
+**Components that take essentially no responsibility for explaining the data points have rnk$\to$ 0 and hence Nk$\to$ 0. From (10.58), we see that αk$\to$ α0 and from (10.60)–(10.63) we see that the other parameters revert to their prior values**
+
+***
+In fact if we consider the limit N →∞then the Bayesian treatment converges to the maximum likelihood EM algorithm.
+
+计算量大的部分主要是the evaluation of the responsibilities, together with the evaluation and inversion of the weighted data covariance matrices，而这些在MLE EM中也都有。因此variational的方法并没有增大多少计算量。
+优点：
+* 解决了singlarity的问题，these singularities are removed if we simply introduce a prior and then use a MAP estimate instead of maximum likelihood
+* there is no over-fitting if we choose a large number K of components in the mixture
+* the variational treatment opens up the possibility of determining the optimal number of components in the mixture without resorting to techniques such as cross validation
+
+
