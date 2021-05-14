@@ -30,7 +30,7 @@ variational optimization用于inference的例子：
 和之前的Estep一样，我们关于q对L进行maximize（顺便一提因为没有θ，所以没有M-step了）。如果我们对于q(Z)没有限制，选啥都行的话，lower bound达到最大时，KL散度为0达到, q(Z)就等于真正的posteriorp(Z|X). 这样的结果虽然是对的，但是可能会导致p(Z|X)太复杂，没法算。
 
 **We therefore consider instead a restricted family of distributions q(Z) and then seek the member of this family for which the KL divergence is minimized.** 我们想让对p(Z)加一些限制，使得它们都“好算”，同时又能对真正的posterior足够近似
-(Mark，这点没看懂)
+(下面这段，因为模型简化，所以泛化能力变强，因此就解决了过拟合的问题)
 In particular, there is no ‘over-fitting’ associated with highly flexible distributions. Using more flexible approximations simply allows us to approach the true posterior distribution more closely.
 
 其中一种约束q的方法是使用parametric distribution，如果q(Z|ω) governed by a set of parameters ω，那么L就成了ω的function。我们就可以把常用的优化方法用到L上面了
@@ -271,3 +271,31 @@ In fact if we consider the limit N →∞then the Bayesian treatment converges t
 * the variational treatment opens up the possibility of determining the optimal number of components in the mixture without resorting to techniques such as cross validation
 
 
+### 10.2.2 Variational lower bound
+在求解的过程中，我们可以算一下(10.3)给出的lower bound，用于验证程序是否正确或者是否收敛。
+variational GMM的lower bound：
+![](Pasted%20image%2020210513233250.png)
+![](Pasted%20image%2020210513235518.png)
+![](Pasted%20image%2020210513235550.png)
+![](Pasted%20image%2020210513235625.png)
+![](Pasted%20image%2020210513235637.png)
+![](Pasted%20image%2020210513235657.png)
+Note that the terms involving expectations of the logs of the q distributions simply represent the negative entropies of those distributions
+
+
+### 10.2.3 Predictive density
+在预测中，我们要利用X建模，然后为了一个新来的$\hat{x}$找到它的$\hat{z}$
+![](Pasted%20image%2020210514204156.png)
+where p(π, µ, Λ|X) is the (unknown) true posterior distribution of the parameters
+
+然后对$\hat{z}$进行summation：
+![](Pasted%20image%2020210514205510.png)
+
+然后接下来的积分就没法算了，然后用variational approximation q(π)q(µ, Λ)来代替p(π, µ, Λ|X)
+
+![](Pasted%20image%2020210514205644.png)
+
+
+### 10.2.4 Determining the number of components
+还有一个需要强调的地方，
+For any given setting of the parameters in a Gaussian mixture model , there will exist other parameter settings for which the density over the observed variables will be identical.
