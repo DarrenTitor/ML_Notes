@@ -299,3 +299,198 @@ where p(π, µ, Λ|X) is the (unknown) true posterior distribution of the parame
 ### 10.2.4 Determining the number of components
 还有一个需要强调的地方，
 For any given setting of the parameters in a Gaussian mixture model , there will exist other parameter settings for which the density over the observed variables will be identical.
+
+像MLE一样，最终我们会得到K!个等价的结果。
+在MLE中，没什么所谓，因为我们给参数一个初始值，然后收敛到一个解上，其他的解是没有用的。
+在variational中也是一样，if the true posterior distribution is multimodal, variational inference based on the minimization of KL(q||p) will tend to approximate the distribution in the neighbourhood of one of the modes and ignore the others.
+
+然而让我们要比较不同的K的model时，就要考虑multimodal。此时，可以**add a term lnK! onto the lower bound when used for model comparison and averaging**
+
+MLE的likelihood的值随着K的增加单调增加，因此不能用作模型比较，而baysian可以。
+
+另外一种算合适的K的方法是，treat the mixing coefficients π as parameters and make point estimates of their values by maximizing the lower bound with respect to π instead of maintaining a probability distribution over them as in the fully Bayesian approach
+也就是增加一步：
+![](Pasted%20image%2020210518075513.png)
+
+### 10.2.5 induced factorizations
+除了我们预想的factorization，我们在运算过程中会自动产生一些额外的factorization。这是与graph的结构有关的。
+比如q*(µ, Λ)可以分解为K个component的乘积，q*(Z)可以分解为N个$q*(Z_n)$的乘积。
+这种被额外引入的factorization称为induced factorizations。
+Such induced factorizations can easily be detected using a simple graphical test based on d-separation。
+（具体就跳了）
+
+## 10.3. Variational Linear Regression
+
+尽管baysian linear regression下的intergration是intractable的，我们仍然可以讨论一下对应的近似方法。
+
+这里我们假设precision β是已知的，并且fix到它的真实值上，用于简化计算。
+
+对于linear regression model这个例子，evidence framework和variational framework是等价的。但我们仍然可以讨论一下，为之后的variational logistic regression 作铺垫。
+
+先回忆一下之前的baysian regression，长这样：
+![](Pasted%20image%2020210518221834.png)
+![](Pasted%20image%2020210518221845.png)
+
+### 10.3.1 Variational distribution
+我们的目标是给posterior p(w,α|t)找一个近似
+![](Pasted%20image%2020210518221958.png)
+
+直接把α代入最优解的表达式，得到：
+![](Pasted%20image%2020210518222437.png)
+![](Pasted%20image%2020210518222454.png)
+然后再把w代入：
+![](Pasted%20image%2020210518222521.png)
+![](Pasted%20image%2020210518222532.png)
+![](Pasted%20image%2020210518222539.png)
+利用gamma和gaussian的性质，可以得到：
+![](Pasted%20image%2020210518222736.png)
+
+参数的求解方法还是给α和w一个初始值，然后循环求解
+
+### 10.3.2 Predictive distribution
+
+### 10.3.3 Lower bound
+![](Pasted%20image%2020210518223926.png)
+![](Pasted%20image%2020210518223935.png)
+
+## 10.4. Exponential Family Distributions
+
+在这一部分中，我们把latent variable进一步分为intensive **latent variable** Z 和 extensive **parameter** θ
+其中intensive表示会随着data size变化，extensive则不会。
+
+Now suppose that the joint distribution of observed and latent variables is a member of the exponential family, parameterized by natural parameters η so that
+![](Pasted%20image%2020210518233311.png)
+
+## 10.5. Local Variational Methods
+之前讲的方法可以看作是global method，it directly seeks an approximation to the **full posterior distribution over all random variables**
+接下来介绍一个local approach：finding bounds on functions over **individual** variables or **groups** of variables within a model
+比如，我们会找一个conditional distribution p(y|x)的bound, 然而这只是a much larger probabilistic model中的一个factor
+This local approximation can be applied to multiple variables **in turn** until a tractable approximation is obtained
+
+***
+#### example: exp{-x}
+这里用一个例子来展示local method：f(x)=exp{-x}，这个是一个convex function
+Our goal is to approximate f(x) by a simpler function, in particular a linear function of x
+
+当这个线性函数为f(x)的切线时，可以看到此时这个切线就是f(x)的一个lower bound。
+由泰勒展开可以得到f(x)在$\xi$ 处的切线：
+![](Pasted%20image%2020210519101925.png)
+
+$y(x)\le f(x)$ with equality when x = $\xi$
+
+然后我们把f(x)换成exp(-x)，然后令$\lambda =-exp\{-\xi\}$，可以得到：
+![](Pasted%20image%2020210519102518.png)
+![](Pasted%20image%2020210519102530.png)
+
+不同的λ对应不同的切线，每一条切线都是f(x)的lower bound，同时λ也是这一条切线的斜率。切线parameterized by λ。
+因为$f(x)\ge y(x, \lambda)$，就可以得到
+![](Pasted%20image%2020210519103153.png)
+
+然后我们就用一个更简单的$y(x, \lambda)$近似了f(x)，但同时我们引入了一个新的参数λ
+
+
+***
+#### generalize
+下面用**convex duality**对上面的这种方法进行推广：
+
+![](Pasted%20image%2020210519105559.png)
+在左图中，$\lambda x$是convex funxtion f(x)的一个lower bound，但是并不是最tight的，因此要把直线平移到与f(x)相切的位置。而需要平移的距离可以由$min\{f(x)-\lambda x\}$得到，因此我们定义一个$g(\lambda)$:
+![](Pasted%20image%2020210519105545.png)
+刚才我们是fixing λ and varying x，现在consider a particular x and then adjust λ until the tangent plane is tangent at that particular x
+现在有了$g(\lambda)$，我们已经能保证直线与f(x)相切了。现在我们想要给定某一个x，调整λ，使得直线与f(x)**在x处相切**。
+consider一个$max_{\lambda}(\lambda x-g(\lambda))$，尝试所有的λ，我们会得到一系列的“切线在x处的y坐标”。而这其中最大的，就是切线与f(x)在x处相切的情况，此时max得到的这个值，恰好等于f(x)在x处的函数值，
+![](Pasted%20image%2020210519171928.png)
+因此我们可以把这个“巧合”表示为：
+![](Pasted%20image%2020210519111533.png)
+
+观察这两个式子的形式，我们可以看到这两个式子play a dual role
+$g(\lambda)=max_{x}(\lambda x-f(x))$
+$f(x)=max_{\lambda}(\lambda x-g(\lambda))$
+
+***
+类比，对于concave function，我们可以找upper bound，此时要把上边式子中的max都换成min：
+![](Pasted%20image%2020210519173256.png)
+
+***
+如果function既不是convex也不是concave，we can first seek invertible transformations either of the function or of its argument which change it into a convex form. We then calculate the conjugate function and then transform back to the original variables.
+
+例子：logistic sigmoid function：
+![](Pasted%20image%2020210519173521.png)
+upper bound：
+sigmoid既不是convex也不是concave，但是由二阶导数可知，sigmoid的logarithm是concave的。因此我们令f(x)=sigmoid的导数。令$f'(x)=\lambda$,求出$\xi$，再代入g(λ)，可以得到：
+![](Pasted%20image%2020210519190745.png)
+我们发现这就是binary entropy，for a variable whose probability of having the value 1 is λ
+
+然后我们代入到f(x)的表达式，就可以得到sigmoid的upperbound：
+![](Pasted%20image%2020210519191005.png)
+![](Pasted%20image%2020210519192344.png)
+
+lower bound：
+We can also obtain a lower bound on the sigmoid having the functional form of a Gaussian
+![](Pasted%20image%2020210519194328.png)
+![](Pasted%20image%2020210519194435.png)
+$f(x)=-ln(e^{x/2}+e^{-x/2})$ is a convex function of the variable $x^2$
+因此我们可以得出一个关于$x^2$的linear function作为lower bound
+![](Pasted%20image%2020210519194642.png)
+求解时，令λ等于斜率：
+![](Pasted%20image%2020210519194658.png)
+可以得到这个式子，再利用tanh和sigmoid的关系，可以做一下转换：
+![](Pasted%20image%2020210519195639.png)
+
+下面要进行一个比较微妙的改动，（因为PRML就这么改的），我们把之前讨论中的所有$\lambda$改为$\eta$，然后定义$\lambda=-\eta$
+此时上面的(10.141)就变成了
+![](Pasted%20image%2020210519200248.png)
+而本质上其实什么都没有改，只是换了一下notation
+
+Instead of thinking of λ as the variational parameter, we can let ξ play this role as this leads to simpler expressions for the conjugate function, which is then given by
+![](Pasted%20image%2020210519200637.png)
+然后我们就得到了f(x)的bound：
+![](Pasted%20image%2020210519200727.png)
+![](Pasted%20image%2020210519200912.png)
+where λ(ξ) is defined by (10.141).
+***
+使用这些bound的例子：
+
+![](Pasted%20image%2020210519201642.png)
+where σ(a) is the logistic sigmoid, and p(a) is a Gaussian probability density
+在Bayesian models的predictive distribution中，我们会遇到上面的这个积分，其中p(a)是一个posterior parameter distribution
+这个积分没法算，因此我们利用(10.144)这个近似，这里我们记作$\sigma(a)\ge f(a,\xi)$ where ξ is a variational parameter
+
+The integral now **becomes the product of two exponential-quadratic functions** and so can be integrated analytically to give a bound on I
+![](Pasted%20image%2020210519202152.png)
+
+此时我们将其转化为了一个关于$\xi$的优化问题，which we do by finding the value ξ that maximizes the function F(ξ)
+The resulting value F(ξ) represents the tightest bound **within this family of bounds** and can be used as an approximation to I.
+
+## 10.6. Variational Logistic Regression
+
+### 10.6.1 Variational posterior distribution
+下面我们使用variational approximation based on the local bounds。
+**This allows the likelihood function for logistic regression, which is governed by the logistic sigmoid, to be approximated by the exponential of a quadratic form.**
+和第4章一样，我们还是先给w设一个gaussian的prior
+![](Pasted%20image%2020210519211541.png)
+这里我们先假定$m_0$和$S_0$这两个hyperparameter都是fixed constants。在10.6.3中再拓展到unknown的情况。
+
+***
+我们先写出baysian logistic regression的marginal，然后利用variational的方法，求出lower bound从而对其进行近似。
+
+baysian LR中，marginal likelihood是这样的：
+![](Pasted%20image%2020210519221814.png)
+
+对于每一个t，都有：
+![](Pasted%20image%2020210519221936.png)
+where a = $w^T\phi$
+
+回忆我们之前求的sigmoid的lower bound：
+![](Pasted%20image%2020210519231334.png)
+代入得到：
+![](Pasted%20image%2020210519231455.png)
+
+我们可以看到每笔data都对应一个$\xi$。
+然后我们把a = $w^T\phi$和lower bound代入joint，可以看到我们可以用$h(w,\xi)$近似conditional likelihood
+![](Pasted%20image%2020210519234207.png)
+
+Note that the function on the right-hand side cannot be interpreted as a probability density **because it is not normalized**.
+
+因为ln函数单调递增，所以上面的不等式，两边同时取ln，不等式方向不变：
+![](Pasted%20image%2020210519235638.png)
