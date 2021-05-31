@@ -1,9 +1,5 @@
 # My notes of PRML
 
-然而我懒得设置latex了，之前试着用了一下感觉好麻烦= =
-
-就直接从obsidian粘贴到这里，仅作备份
-
 [Chapter 1](./PRML/chap1/chap1)
 
 [Chapter 2](./PRML/chap2/chap2)
@@ -15,4 +11,34 @@
 [Chapter 9](./PRML/chap9/chap9)
 
 [Chapter 10](./PRML/chap10/chap10)
+
+
+
+
+
+***
+
+# My notes of PGM
+
+
+
+[lecture01-Introduction](./PGM/course/lecture01-Introduction)
+
+[lecture02-MRFrepresentation](./PGM/course/lecture02-MRFrepresentation)
+
+[lecture03-BNrepresentation](./PGM/course/lecture03-BNrepresentation)
+
+[lecture04-ExactInference](./PGM/course/lecture04-ExactInference)
+
+[lecture05-ParameterEst](./PGM/course/lecture05-ParameterEst)
+
+[lecture06-HMMCRF](./PGM/course/lecture06-HMMCRF)
+
+[lecture07-VI1](./PGM/course/lecture07-VI1)
+
+[lecture08-VI2](./PGM/course/lecture08-VI2)
+
+[lecture09-MC](./PGM/course/lecture09-MC)
+
+[lecture10-MCMC-opt](./PGM/course/lecture10-MCMC-opt)
 

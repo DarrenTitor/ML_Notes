@@ -1,6 +1,5 @@
 # ML\_Notes
 
-1. aaa
-2. bbb
-3. ccc
+My ML notes. Just for back up.
 
+Basicly from PRML and the online course of PGM.
