@@ -289,9 +289,9 @@ KL divergence实际上求不出来，因为我们不知道真正的p(x).
 因此p(x)可以用$p(\mathrm{x})$近似
 
 
-![](Pasted%20image%2020210329005907.png)
+![](All%20About%20Data%20Science/PRML/chap1/Pasted%20image%2020210329005907.png)
 
-![](Pasted%20image%2020210329005953.png)
+![](All%20About%20Data%20Science/PRML/chap1/Pasted%20image%2020210329005953.png)
 Thus we see that **minimizing this Kullback-Leibler divergence is equivalent to maximizing the likelihood function**
 
 
@@ -302,13 +302,13 @@ Mutual information
 对于joint distribution中的一组变量x和y，如果它们不独立，就不能表示为p(x, y)= p(x)p(y)
 但是，我们可以用KL divergence衡量它们之间“有多么不独立”
 
-![](Pasted%20image%2020210329010426.png)
+![](All%20About%20Data%20Science/PRML/chap1/Pasted%20image%2020210329010426.png)
 I(x, y) >= 0 with equality if, and only if, x and y are independent
 
 mutual information is related to the conditional entropy through
-![](Pasted%20image%2020210329010614.png)
+![](All%20About%20Data%20Science/PRML/chap1/Pasted%20image%2020210329010614.png)
 推导：
-![](Pasted%20image%2020210329010626.png)
+![](All%20About%20Data%20Science/PRML/chap1/Pasted%20image%2020210329010626.png)
 
 Thus we can view the mutual information as the reduction in the uncertainty about x by virtue of being told the value of y (or vice versa). 
 我们可以把mutual information看作是观察到y之后，对于x的uncertainty减少了多少（通过entropy和conditional entropy来衡量）

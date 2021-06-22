@@ -494,3 +494,25 @@ Note that the function on the right-hand side cannot be interpreted as a probabi
 
 因为ln函数单调递增，所以上面的不等式，两边同时取ln，不等式方向不变：
 ![](Pasted%20image%2020210519235638.png)
+
+最后代入prior p(w)，不等式右边看作是w的function：
+![](Pasted%20image%2020210520224703.png)
+然后我们发现ln posterior是一个关于w的quadratic，因此可以把w的分布写成一个gaussian q(w)，用这个q(w)来近似p(t|w)p(w)
+由此我们得到variational gaussian posterior:
+![](Pasted%20image%2020210521090038.png)
+
+### 10.6.2 Optimizing the variational parameters
+
+在做预测之前，我们需要求解variational parameters {ξn} by maximizing the lower bound on the marginal likelihood.
+
+我们把之前的得到的不等式代入marginal p(t)的表达式：
+![](Pasted%20image%2020210521091207.png)
+
+因此我们要利用上面这个式子maximize over ξ，这是就可以选两种方法：
+* we recognize that the function L(ξ) is defined by an integration over w and so we can view w as a latent variable and **invoke the EM algorithm**
+* we **integrate over w analytically** and then perform a direct maximization over ξ. Let us begin by considering the EM approach
+
+***
+
+EM algorithm:
+
