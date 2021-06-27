@@ -31,5 +31,5 @@
 # NLP
 
 [Self-attention](./NLP/Attention/note_Self-attention_LHY)<br>
-
+[Transformer](note_transformer_LHY.md)<br>
 ...
