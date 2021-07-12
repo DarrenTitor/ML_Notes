@@ -44,7 +44,6 @@ self-attention可以叠加多次
 3. 通过softmax(不一定非要softmax，可以尝试其他的)
 	![](Pasted%20image%2020210622221301.png)
 4. 把每个**word**都乘上$W^v$得到$v^i$，然后把$v^i$对于attention score$\alpha_{1,j}$加权求和，得到$b^1$。注意所有的b的生成没有先后顺序，它们是同时生成的。
-
 	![](Pasted%20image%2020210622221452.png)
 <br>
 
