@@ -29,7 +29,13 @@
 
 
 # NLP
+DLHLP<br>
+[Self-attention](./NLP/DLHLP/Attention/note_Self-attention_LHY)<br>
+[Transformer](./NLP/DLHLP/Transformer/note_transformer_LHY)<br>
+[BERT](./NLP/DLHLP/Bert/note)<br>
+HuggingFace<br>
+[HuggingFace/1 - Concepts](./NLP/Transformer/HuggingFace/1 - Concepts)<br>
+[HuggingFace/2 - Usage](./NLP/Transformer/HuggingFace/2 - Usage)<br>
+[HuggingFace/3 - Fine-tune](./NLP/Transformer/HuggingFace/3 - Fine-tune)<br>
 
-[Self-attention](./NLP/Attention/note_Self-attention_LHY)<br>
-[Transformer](note_transformer_LHY.md)<br>
 ...
