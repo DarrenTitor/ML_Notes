@@ -1,4 +1,4 @@
-# PRML
+## PRML
 
 [Chapter 1](./PRML/chap1/chap1)<br>
 [Chapter 2](./PRML/chap2/chap2)<br>
@@ -10,7 +10,7 @@
 ***
 
 
-# PGM
+## PGM
 
 [lecture01-Introduction](./PGM/course/lecture01-Introduction)<br>
 [lecture02-MRFrepresentation](./PGM/course/lecture02-MRFrepresentation)<br>
@@ -28,14 +28,14 @@
 ***
 
 
-# NLP
+## NLP
 **DLHLP**<br>
 [Self-attention](./NLP/DLHLP/Attention/note_Self-attention_LHY)<br>
 [Transformer](./NLP/DLHLP/Transformer/note_transformer_LHY)<br>
 [BERT](./NLP/DLHLP/Bert/note)<br>
 **HuggingFace**<br>
-[HuggingFace/1 - Concepts](./NLP/HuggingFace/1 - Concepts)<br>
-[HuggingFace/2 - Usage](./NLP/HuggingFace/2 - Usage)<br>
-[HuggingFace/3 - Fine-tune](./NLP/HuggingFace/3 - Fine-tune)<br>
+[HuggingFace:1_Concepts](./NLP/HuggingFace/1_Concepts)<br>
+[HuggingFace:2_Usage](./NLP/HuggingFace/2_Usage)<br>
+[HuggingFace:3_Fine-tune](./NLP/HuggingFace/3_Fine-tune)<br>
 
 ...
