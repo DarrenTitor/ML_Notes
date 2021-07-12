@@ -36,6 +36,6 @@
 **HuggingFace**<br>
 [HuggingFace:1_Concepts](./NLP/HuggingFace/1_Concepts)<br>
 [HuggingFace:2_Usage](./NLP/HuggingFace/2_Usage)<br>
-[HuggingFace:3_Fine-tune](./NLP/HuggingFace/3_Fine-tune)<br>
+[HuggingFace:3_Fine-tune](./NLP/HuggingFace/3_Finetune)<br>
 
 ...
